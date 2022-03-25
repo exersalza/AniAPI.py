@@ -272,4 +272,5 @@ class AnimeGenres(Enum):
 
 
 if __name__ == '__main__':
+    # Just for testing
     print(AnimeGenres.YURI)

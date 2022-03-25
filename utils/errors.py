@@ -20,42 +20,6 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-import http.client
-
-from utils import AnimeGenres
-from utils import errors
-
-from config import API_TOKEN
-
-conn = http.client.HTTPSConnection("api.aniapi.com")
-
-headers = {
-    'Authorization': f'Bearer {API_TOKEN}',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-}
-
-
-class AniApi(http.client.HTTPSConnection):
-    def __init__(self, **kwargs):
-        super().__init__(host='api.aniapi.com')
-
-        self.headers = {
-            'Authorization': f'Bearer {kwargs.pop("token")}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-
-    def get_anime(self, url, body=None) -> str:
-        self.request('GET', url, body, self.headers)
-
-        res = self.getresponse()
-        data = res.read()
-        return data.decode('utf-8')
-
-
-if __name__ == '__main__':
-    api = AniApi(token=API_TOKEN)
-
-    res = api.get_anime('/v1/anime')
-    print(res)
+class InvalidTokenError(BaseException):
+    def __init__(self, message):
+        self.message = message
