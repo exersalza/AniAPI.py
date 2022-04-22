@@ -20,6 +20,6 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-class InvalidTokenError(BaseException):
-    def __init__(self, message):
-        self.message = message
+class CustomErrors:
+    class InvalidTokenError(BaseException):
+        pass
