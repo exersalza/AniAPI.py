@@ -21,41 +21,47 @@
 #  SOFTWARE.
 
 import http.client
+import json
+import pprint
 
-from utils import AnimeGenres
-from utils import errors
+from utils import enums
+from utils.errors import CustomErrors
+from type.anime import Anime
 
 from config import API_TOKEN
 
-conn = http.client.HTTPSConnection("api.aniapi.com")
-
-headers = {
-    'Authorization': f'Bearer {API_TOKEN}',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-}
-
 
 class AniApi(http.client.HTTPSConnection):
-    def __init__(self, **kwargs):
+    def __init__(self, token: str):
         super().__init__(host='api.aniapi.com')
 
         self.headers = {
-            'Authorization': f'Bearer {kwargs.pop("token")}',
+            'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
 
-    def get_anime(self, url, body=None) -> str:
-        self.request('GET', url, body, self.headers)
+    def get_anime(self, _id=None) -> dict:
+        """
+        Get an Anime list or when you provide an ID it will give you the Anime with the related ID.
+
+        :param _id: ID of the Anime
+        :return: Dictionary with the response
+        """
+        self.request('GET', f'/v1/anime/{_id if _id else ""}', headers=self.headers)
 
         res = self.getresponse()
         data = res.read()
-        return data.decode('utf-8')
+        return json.loads(data.decode('utf-8'))
+
+    def get_random_anime(self, count: int, nsfw: bool = False) -> dict:
+        self.request('GET', f'/v1/random/anime/{count}/{nsfw}', headers=self.headers)
+
+        response = self.getresponse()
+        data = response.read()
+        return json.loads(data.decode('utf-8'))
 
 
 if __name__ == '__main__':
-    api = AniApi(token=API_TOKEN)
-
-    res = api.get_anime('/v1/anime')
-    print(res)
+    client = AniApi(token=API_TOKEN)
+    pprint.pprint(client.get_anime(-1))
