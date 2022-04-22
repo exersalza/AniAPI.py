@@ -19,7 +19,7 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
-from typing import TypedDict, Union, List
+from typing import TypedDict, Union, List, Any, Dict
 from utils import AnimeFormat, AnimeStatus, AiringDays, SeasonPeriod
 
 
@@ -45,7 +45,7 @@ class Anime(TypedDict):
     cover_color: Union[str, None]
     banner_image: Union[str, None]
     genres: List[str]
-    sagas: List[dict]
+    sagas: List[Dict[str, Any]]
     sequel: Union[int, None]
     prequel: Union[int, None]
     score: float
