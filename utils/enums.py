@@ -34,8 +34,3 @@ class AiringDays(Enum):
     Thursday = 4
     Friday = 5
     Saturday = 6
-
-
-if __name__ == '__main__':
-    # Just for testing
-    print(AnimeGenres.YURI)
