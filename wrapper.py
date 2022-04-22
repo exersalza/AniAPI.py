@@ -1,3 +1,4 @@
+#!/bin/python3
 #  MIT License
 #
 #  Copyright (c) 2022 by exersalza
@@ -22,46 +23,70 @@
 
 import http.client
 import json
-import pprint
-
-from utils import enums
-from utils.errors import CustomErrors
-from type.anime import Anime
+import urllib.parse
 
 from config import API_TOKEN
 
 
 class AniApi(http.client.HTTPSConnection):
+    """ AniApi client class. """
     def __init__(self, token: str):
         super().__init__(host='api.aniapi.com')
 
+        # Define the default headers.
         self.headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
 
-    def get_anime(self, _id=None) -> dict:
+    # Here comes all the Anime related methods.
+    def get_anime(self, _id=None, **kwargs) -> dict:
         """
-        Get an Anime list or when you provide an ID it will give you the Anime with the related ID.
+        Get an Anime list with 100 Animes or when you provide an ID it will give you the Anime with the related ID.
 
-        :param _id: ID of the Anime
+        :param _id: ID of the Anime [OPTIONAL]
         :return: Dictionary with the response
         """
-        self.request('GET', f'/v1/anime/{_id if _id else ""}', headers=self.headers)
+        params = urllib.parse.urlencode(kwargs)
+        print(params)
+
+        self.request('GET', f'/v1/anime/{_id if _id else ""}?{params}', headers=self.headers)
 
         res = self.getresponse()
-        data = res.read()
-        return json.loads(data.decode('utf-8'))
+        return json.loads(res.read().decode('utf-8'))
 
     def get_random_anime(self, count: int, nsfw: bool = False) -> dict:
+        """
+        Get a random Anime object.
+
+        i.e. `client.get_random_anime(1, True)` - This will return an object of 1 random Anime with NSFW content.
+
+        :param count: Give an amount of Anime to get
+        :param nsfw: Is it safe for work? right?
+        :return: Dictionary with the response
+        """
+
         self.request('GET', f'/v1/random/anime/{count}/{nsfw}', headers=self.headers)
 
-        response = self.getresponse()
-        data = response.read()
-        return json.loads(data.decode('utf-8'))
+        res = self.getresponse()
+        return json.loads(res.read().decode('utf-8'))
+
+    # Here comes all the Episode related methods.
+    def get_episode(self, _id=None) -> dict:
+        """
+        Get an Episode with the related ID.
+
+        :param _id: ID of the Episode
+        :return: Dictionary with the response
+        """
+
+        self.request('GET', f'/v1/episode/{_id if _id else ""}', headers=self.headers)
+
+        res = self.getresponse()
+        return json.loads(res.read().decode('utf-8'))
 
 
 if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
-    pprint.pprint(client.get_anime(-1))
+    print(client.get_anime(year=1999))
