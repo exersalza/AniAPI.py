@@ -26,6 +26,8 @@ import json
 import urllib.parse
 
 from config import API_TOKEN
+from utils.flags import ANIME_REQ
+from utils.errors import CustomErrors as CE
 
 
 class AniApi(http.client.HTTPSConnection):
@@ -45,11 +47,20 @@ class AniApi(http.client.HTTPSConnection):
         """
         Get an Anime list with 100 Animes or when you provide an ID it will give you the Anime with the related ID.
 
+        It will raise an **InvalidFlagsException** when you give any Kwargs that are not supported.
+
+        Supported Parameters can be found at: https://aniapi.com/docs/resources/anime/#parameters-1 page.
+
         :param _id: ID of the Anime [OPTIONAL]
+        :param kwargs: Used for specific anime search.
         :return: Dictionary with the response
         """
+        invalid = set(kwargs) - set(ANIME_REQ)
+
+        if invalid:
+            raise CE.InvalidParamsException(f'Invalid parameters: {list(invalid)}')
+
         params = urllib.parse.urlencode(kwargs)
-        print(params)
 
         self.request('GET', f'/v1/anime/{_id if _id else ""}?{params}', headers=self.headers)
 
@@ -89,4 +100,4 @@ class AniApi(http.client.HTTPSConnection):
 
 if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
-    print(client.get_anime(year=1999))
+    print(client.get_anime(1))
