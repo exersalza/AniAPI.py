@@ -23,7 +23,7 @@ from typing import TypedDict, Union, List, Any, Dict
 from utils import AnimeFormat, AnimeStatus, AiringDays, SeasonPeriod
 
 
-class Anime(TypedDict):
+class Anime:
     id: int
     anilist_id: Union[int, None]
     mal_id: Union[int, None]
