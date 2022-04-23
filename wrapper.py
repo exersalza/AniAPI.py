@@ -23,19 +23,20 @@
 
 import http.client
 import json
-import urllib.parse
 import time
+import urllib.parse
 from typing import Union, List
 
-from config import API_TOKEN
-from utils.flags import ANIME_REQ
-from utils.errors import CustomErrors as CE
 from _types.anime import Anime
+from config import API_TOKEN
 from convertor import Dict2AnimeObj
+from utils.errors import CustomErrors as CE
+from utils.flags import ANIME_REQ
 
 
 class AniApi(http.client.HTTPSConnection):
     """ AniApi client class. """
+
     def __init__(self, token: str):
         super().__init__(host='api.aniapi.com')
 
