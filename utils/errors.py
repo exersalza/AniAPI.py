@@ -23,3 +23,6 @@
 class CustomErrors:
     class InvalidTokenError(BaseException):
         pass
+
+    class InvalidParamsException(BaseException):
+        pass
