@@ -50,4 +50,4 @@ class Anime:
     prequel: Union[int, None]
     score: float
     nsfw: bool
-    recommendations: List[int]
+    recommendations: Union[List[int], int]

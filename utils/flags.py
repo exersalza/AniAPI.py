@@ -8,4 +8,5 @@ ANIME_REQ = ['title',
              'season',
              'genres',
              'nsfw',
-             'with_episodes']
+             'with_episodes',
+             'page']

@@ -28,16 +28,21 @@ import urllib.parse
 from typing import Union, List
 
 from _types.anime import Anime
+from _types.context import Context
+
 from config import API_TOKEN
-from convertor import Dict2AnimeObj
+from convertor import AnimeObj, ContextObj, DataObj
 from utils.errors import CustomErrors as CE
 from utils.flags import ANIME_REQ
 
 
 class AniApi(http.client.HTTPSConnection):
-    """ AniApi client class. """
+    def __init__(self, token: str = ''):
+        """ This is the Base Class for the AniApi wrapper.
 
-    def __init__(self, token: str):
+        :param token: (str) API-Token.
+            You only need a Token when your Application is **not** in the read-only scope.
+        """
         super().__init__(host='api.aniapi.com')
 
         # Define the default headers.
@@ -48,7 +53,7 @@ class AniApi(http.client.HTTPSConnection):
         }
 
     # Here comes all the Anime related methods.
-    def get_anime(self, _id=None, **kwargs) -> Union[Anime, List[Anime]]:
+    def get_anime(self, _id=None, **kwargs) -> Context:
         """
         Get an Anime list with 100 Animes or when you provide an ID it will give you the Anime with the related ID.
 
@@ -68,13 +73,18 @@ class AniApi(http.client.HTTPSConnection):
         self.request('GET', f'/v1/anime/{_id if _id else ""}?{urllib.parse.urlencode(kwargs)}', headers=self.headers)
 
         res = self.getresponse()
-        data = json.loads(res.read().decode('utf-8'))
+        print(dict(res.headers))
+        res_read = res.read()
+        data = json.loads(res_read.decode('utf-8'))
 
         if _id is not None:
-            obj = Dict2AnimeObj(**data['data'])
-            return obj
+            data['data'] = AnimeObj(**data['data'])
+            return ContextObj(**data)
 
-        return [Dict2AnimeObj(**anime) for anime in data['data']['documents']]
+        data['data']['documents'] = [AnimeObj(**anime) for anime in data['data']['documents']]
+        print(data)
+        data['data'] = DataObj(**data['data'])
+        return ContextObj(**data)
 
     def get_random_anime(self, count: int, nsfw: bool = False) -> Anime:
         """
@@ -91,7 +101,7 @@ class AniApi(http.client.HTTPSConnection):
 
         res = self.getresponse()
         data = json.loads(res.read().decode('utf-8'))
-        return Dict2AnimeObj(**data.get('data')[0])
+        return AnimeObj(**data.get('data')[0])
 
     # Here comes all the Episode related methods.
     def get_episode(self, _id=None) -> dict:
@@ -111,11 +121,11 @@ class AniApi(http.client.HTTPSConnection):
 if __name__ == '__main__':
     start = time.time()
     client = AniApi(token=API_TOKEN)
-    data = client.get_anime()
+    data: Context = client.get_anime()
 
     # for i in data:
     #     print(i)
-    print(data)
+    # print(data)
     end = time.time()
 
     print(f'Time: {(end - start):.2f}s')
