@@ -23,8 +23,10 @@
 
 import http.client
 import json
+import pprint
 import time
-import urllib.parse
+
+from urllib.parse import urlencode
 from typing import Union, List
 
 from _types.anime import Anime
@@ -32,25 +34,29 @@ from _types.context import Context
 
 from config import API_TOKEN
 from convertor import AnimeObj, ContextObj, DataObj
-from utils.errors import CustomErrors as CE
-from utils.flags import ANIME_REQ
+from utils import InvalidParamsException, ANIME_REQ
+from constants import API_VERSION, DEFAULT_HEADER
 
 
 class AniApi(http.client.HTTPSConnection):
-    def __init__(self, token: str = ''):
+    def __init__(self, token: str = '', port: int = 443, timeout: int = None):
         """ This is the Base Class for the AniApi wrapper.
 
-        :param token: (str) API-Token.
+        :param token: (str) --
             You only need a Token when your Application is **not** in the read-only scope.
-        """
-        super().__init__(host='api.aniapi.com')
 
-        # Define the default headers.
-        self.headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
+        :param port: (int) --
+            When you want to set the port to another to avoid conflicts with other services.
+
+        :param timeout: (float) --
+            The optional timeout parameter is given, blocking operations (like connection attempts)
+            will `timeout` after that many seconds.
+
+        """
+        super().__init__(host='api.aniapi.com', port=port, timeout=timeout)
+
+        # Define default headers with token
+        self.headers = DEFAULT_HEADER(token)
 
     # Here comes all the Anime related methods.
     def get_anime(self, _id=None, **kwargs) -> Context:
@@ -68,12 +74,12 @@ class AniApi(http.client.HTTPSConnection):
         invalid = set(kwargs) - set(ANIME_REQ)
 
         if invalid:
-            raise CE.InvalidParamsException(f'Invalid parameters: {list(invalid)}')
+            raise InvalidParamsException(f'Invalid parameters: {invalid}')
 
-        self.request('GET', f'/v1/anime/{_id if _id else ""}?{urllib.parse.urlencode(kwargs)}', headers=self.headers)
+        self.request('GET', f'/{API_VERSION}/anime/{_id if _id else ""}?{urlencode(kwargs)}', headers=self.headers)
 
         res = self.getresponse()
-        print(dict(res.headers))
+        pprint.pprint(dict(res.headers))  # debug
         res_read = res.read()
         data = json.loads(res_read.decode('utf-8'))
 
@@ -82,22 +88,25 @@ class AniApi(http.client.HTTPSConnection):
             return ContextObj(**data)
 
         data['data']['documents'] = [AnimeObj(**anime) for anime in data['data']['documents']]
-        print(data)
+        # print(data)
         data['data'] = DataObj(**data['data'])
         return ContextObj(**data)
 
-    def get_random_anime(self, count: int, nsfw: bool = False) -> Anime:
+    def get_random_anime(self, count: int = 1, nsfw: bool = False) -> Anime:
         """
         Get a random Anime object.
 
         i.e. `client.get_random_anime(1, True)` - This will return an object of 1 random Anime with NSFW content.
 
-        :param count: Give an amount of Anime to get
-        :param nsfw: Is it safe for work? right?
-        :return: Dictionary with the response
+        :param count: (int) --
+            Give an amount of Anime to get
+        :param nsfw: (bool) --
+            Is it safe for work? right?
+        :return: object.Anime --
+            Dictionary with the response
         """
 
-        self.request('GET', f'/v1/random/anime/{count}/{nsfw}', headers=self.headers)
+        self.request('GET', f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
 
         res = self.getresponse()
         data = json.loads(res.read().decode('utf-8'))
@@ -112,7 +121,7 @@ class AniApi(http.client.HTTPSConnection):
         :return: Dictionary with the response
         """
 
-        self.request('GET', f'/v1/episode/{_id if _id else ""}', headers=self.headers)
+        self.request('GET', f'/{API_VERSION}/episode/{_id if _id else ""}', headers=self.headers)
 
         res = self.getresponse()
         return json.loads(res.read().decode('utf-8'))
