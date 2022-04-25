@@ -20,9 +20,16 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-class CustomErrors:
-    class InvalidTokenError(BaseException):
-        pass
 
-    class InvalidParamsException(BaseException):
-        pass
+class InvalidTokenError(BaseException):
+    """
+    This exception is raised when an invalid token is given.
+    """
+    pass
+
+
+class InvalidParamsException(BaseException):
+    """
+    This exception is raised when an invalid parameter is given.
+    """
+    pass
