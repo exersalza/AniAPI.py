@@ -19,35 +19,15 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
-from typing import TypedDict, Union, List, Any, Dict
-from utils import AnimeFormat, AnimeStatus, AiringDays, SeasonPeriod
+from typing import Optional, List
+
+from _types.anime import Anime
 
 
-class Anime(TypedDict):
-    id: int
-    anilist_id: Union[int, None]
-    mal_id: Union[int, None]
-    tmdb_id: Union[int, None]
-    format: AnimeFormat
-    status: AnimeStatus
-    titles: dict
-    descriptions: dict
-    start_date: Union[str, None]
-    end_date: Union[str, None]
-    weakly_airing_day: AiringDays
-    season_period: SeasonPeriod
-    season_year: Union[int, None]
-    episodes_count: int
-    episodes_duration: Union[int, None]
-    trailer_url: Union[str, None]
-    cover_image: str
-    has_cover_image: bool
-    cover_color: Union[str, None]
-    banner_image: Union[str, None]
-    genres: List[str]
-    sagas: List[Dict[str, Any]]
-    sequel: Union[int, None]
-    prequel: Union[int, None]
-    score: float
-    nsfw: bool
-    recommendations: Union[List[int], int]
+class AnimeListData:
+    def __init__(self, **kwargs):
+        self.current_page: int = kwargs.get('current_page')
+        self.count: int = kwargs.get('count')
+        self.documents: List[Anime] = kwargs.get('documents')
+        self.last_page: int = kwargs.get('last_page')
+

@@ -1,4 +1,4 @@
-from _types import anime, context, data
+from _types import anime, context, data, ratelimit
 
 
 class AnimeObj(anime.Anime):
@@ -23,3 +23,13 @@ class DataObj(data.Data):
 
     def __repr__(self):
         return f'{self.__dict__}'
+
+
+class RateLimitObj(ratelimit.RateLimit):
+    def __init__(self, limit: str, remaining: str, reset: str):
+        self.limit = limit
+        self.remaining = remaining
+        self.reset = reset
+
+    def __repr__(self):
+        return f'<limit={self.limit} remaining={self.remaining} reset={self.reset}>'

@@ -19,35 +19,12 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
-from typing import TypedDict, Union, List, Any, Dict
-from utils import AnimeFormat, AnimeStatus, AiringDays, SeasonPeriod
+
+from .data import data
 
 
-class Anime(TypedDict):
-    id: int
-    anilist_id: Union[int, None]
-    mal_id: Union[int, None]
-    tmdb_id: Union[int, None]
-    format: AnimeFormat
-    status: AnimeStatus
-    titles: dict
-    descriptions: dict
-    start_date: Union[str, None]
-    end_date: Union[str, None]
-    weakly_airing_day: AiringDays
-    season_period: SeasonPeriod
-    season_year: Union[int, None]
-    episodes_count: int
-    episodes_duration: Union[int, None]
-    trailer_url: Union[str, None]
-    cover_image: str
-    has_cover_image: bool
-    cover_color: Union[str, None]
-    banner_image: Union[str, None]
-    genres: List[str]
-    sagas: List[Dict[str, Any]]
-    sequel: Union[int, None]
-    prequel: Union[int, None]
-    score: float
-    nsfw: bool
-    recommendations: Union[List[int], int]
+class Context:
+    def __init__(self, **kwargs):
+        self.status_code: int = kwargs.get('status_code', 404)
+        self.message: str = kwargs.get('message', 'Not Found')
+        self.data: Data = kwargs.get('data', {})
