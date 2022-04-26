@@ -1,0 +1,2 @@
+class Episodes:
+    title: str
