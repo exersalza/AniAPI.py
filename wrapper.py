@@ -133,19 +133,32 @@ class AniApi(ApiConnection):
 
         Parameters
         ----------
-        count :
-        nsfw :
+        count : :class:`int`
+            The amount of Animes you want to get. Value should be between 1 and 50.
+
+        nsfw : :class:`bool`
+            If you want to get NSFW Animes. Default is False.
 
         Returns
         -------
+        :class:`ctx`
+            Context object with the query returns and the rate limit information.
+
+        Raises
+        -------
+        ValueError
+            The count can't be less than 1 or more than 50. The api return 50 at max.
 
         """
+        if 1 > count < 50:
+            raise ValueError('Count must be less than 50 and more or equal to 1')
 
-        self.request('GET', f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
+        res, header = self.get(f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
 
-        res = self.getresponse()
-        data = json.loads(res.read().decode('utf-8'))
-        return AnimeObj(**data.get('data')[0])
+        data = json.loads(res.decode('utf-8'))
+        data['ratelimit'] = get_ratelimit(header)
+        data['data'] = [AnimeObj(**anime) for anime in data['data']]
+        return ctx(**data)
 
     # Here comes all the Episode related methods.
     def get_episode(self, _id=None) -> ctx:
@@ -169,7 +182,7 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        data: ctx = client.get_anime(1, status=0)
+        data: ctx = client.get_random_anime(1)
         print(data)
     else:
         f = 0
@@ -181,8 +194,6 @@ if __name__ == '__main__':
             time_list.append(time.time() - start_time)
 
         print(f'{sum(time_list) / 10:.2f}')
-
-
 
     end = time.time()
 
