@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class AnimeFormat(Enum):
+class AnimeFormat(IntEnum):
     TV = 0
     TV_SHORT = 1
     MOVIE = 2
@@ -11,22 +11,22 @@ class AnimeFormat(Enum):
     MUSIC = 6
 
 
-class AnimeStatus(Enum):
+class AnimeStatus(IntEnum):
     FINISHED = 0
     RELEASING = 1
     NOT_YET_RELEASED = 2
     CANCELLED = 3
 
 
-class SeasonPeriod(Enum):
-    WINTER = 0,
-    SPRING = 1,
-    SUMMER = 2,
-    FALL = 3,
-    UNKNOWN = 4,
+class SeasonPeriod(IntEnum):
+    WINTER = 0
+    SPRING = 1
+    SUMMER = 2
+    FALL = 3
+    UNKNOWN = 4
 
 
-class AiringDays(Enum):
+class AiringDays(IntEnum):
     Sunday = 0
     Monday = 1
     Tuesday = 2

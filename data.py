@@ -26,8 +26,28 @@ from _types.anime import Anime
 
 class AnimeListData:
     def __init__(self, **kwargs):
-        self.current_page: int = kwargs.get('current_page')
-        self.count: int = kwargs.get('count')
-        self.documents: List[Anime] = kwargs.get('documents')
-        self.last_page: int = kwargs.get('last_page')
+        self.__current_page = kwargs.get('current_page')
+        self.__count = kwargs.get('count')
+        self.__documents = kwargs.get('documents')
+        self.__last_page = kwargs.get('last_page')
+
+    @property
+    def current_page(self) -> int:
+        return self.__current_page
+
+    @property
+    def count(self) -> int:
+        return self.__count
+
+    @property
+    def documents(self) -> List[Anime]:
+        return self.__documents
+
+    @property
+    def last_page(self) -> int:
+        return self.__last_page
+
+    def __repr__(self):
+        return f'<current_page={self.__current_page} count={self.__count} last_page={self.__last_page}>'
+
 

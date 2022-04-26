@@ -19,12 +19,39 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
+from typing import List, Union, Any
 
-from .data import data
+from _types.ratelimit import RateLimit
 
 
 class Context:
-    def __init__(self, **kwargs):
-        self.status_code: int = kwargs.get('status_code', 404)
-        self.message: str = kwargs.get('message', 'Not Found')
-        self.data: Data = kwargs.get('data', {})
+    def __init__(self, **kwargs):  # Create a Non-changeable object
+        self.__status_code = kwargs.get('status_code', 404)
+        self.__message = kwargs.get('message', 'Not Found')
+        self.__data = kwargs.get('data', {})
+        self.__version = kwargs.get('version', '1')
+        self.__ratelimit = kwargs.get('ratelimit', None)
+
+    @property
+    def status_code(self) -> int:
+        return self.__status_code
+
+    @property
+    def message(self) -> str:
+        return f'{self.__message!r}'
+
+    @property
+    def data(self) -> Union[Any, List[Any]]:
+        return self.__data
+
+    @property
+    def version(self) -> str:
+        return self.__version
+
+    @property
+    def ratelimit(self) -> RateLimit:
+        return self.__ratelimit
+
+    def __repr__(self):
+        return f'<status_code={self.__status_code} message={self.__message!r} data={self.__data} version={self.__version!r}>'
+

@@ -33,77 +33,112 @@ from _types.anime import Anime
 from _types.context import Context
 
 from config import API_TOKEN
-from convertor import AnimeObj, ContextObj, DataObj
+from connection import ApiConnection
+from objectcreator import AnimeObj, DataObj, RateLimit
 from utils import InvalidParamsException, ANIME_REQ
 from constants import API_VERSION, DEFAULT_HEADER
 
+from context import Context as ctx
 
-class AniApi(http.client.HTTPSConnection):
-    def __init__(self, token: str = '', port: int = 443, timeout: int = None):
+
+def get_ratelimit(res: dict) -> RateLimit:
+    """
+    Extract the rate limit from the response.
+
+    Parameters
+    ----------
+    res : [:class:`http.client.HTTPResponse`]
+        The response from the API.
+
+    Returns
+    -------
+    :class:`RateLimit`
+    """
+    return RateLimit(limit=res.get('X-RateLimit-Limit'),
+                     remaining=res.get('X-RateLimit-Remaining'),
+                     reset=res.get('X-RateLimit-Reset'))
+
+
+class AniApi(ApiConnection):
+    def __init__(self, token: str = ''):
         """ This is the Base Class for the AniApi wrapper.
 
-        :param token: (str) --
-            You only need a Token when your Application is **not** in the read-only scope.
+        Attributes:
+        -----------
+        token : [:class:`str`]
+            The API Token you get from https://aniapi.com/profile.
+            You will only need this token when you want to use things from outer scope than the `GET` methods.
 
-        :param port: (int) --
-            When you want to set the port to another to avoid conflicts with other services.
-
-        :param timeout: (float) --
-            The optional timeout parameter is given, blocking operations (like connection attempts)
-            will `timeout` after that many seconds.
-
+        timeout : [:class:`int`]
+            The timeout for the connection.
         """
-        super().__init__(host='api.aniapi.com', port=port, timeout=timeout)
+
+        super().__init__()
 
         # Define default headers with token
         self.headers = DEFAULT_HEADER(token)
 
     # Here comes all the Anime related methods.
-    def get_anime(self, _id=None, **kwargs) -> Context:
+    def get_anime(self, _id=None, **kwargs) -> ctx:
+        r""" Get an Anime object list from the API.
+        You can provide an ID or query parameters to get a single AnimeObject (:class:`Anime`) or an :class:`list` of objects.
+
+        Parameters:
+        ----------
+        _id : Optional[:class:`int`]
+            The ID for the Anime you want to get. Beware it's **not** the mal_id, tmdb_id or the anilist_id they
+            can be different and getting handeld by the `**kwargs` parameter.
+
+        **kwargs : Optional[:class:`dict`]
+            The parameters that you want to use to spice up your request.
+            Supported Parameters can be found inside the `utils.flags` file.
+
+        Returns
+        -------
+        Context
+            A Context object with the query returns and the rate limit information.
+
+        Raises
+        -------
+        InvalidFlagsException
+            When you try to use any flags that are not supported.
+
+        Examples
+        ---------
+        >>> from wrapper import AniApi
+        >>> api = AniApi(token='your_token')
+        >>> api.get_anime(1, status=0)  # Get Anime with ID 1 and status 0 (finished)
+        <status_code=200 message='Anime found' data=<id=1 title='Cowboy Bebop' episodes=26 status=0> version='1'>
         """
-        Get an Anime list with 100 Animes or when you provide an ID it will give you the Anime with the related ID.
 
-        It will raise an **InvalidFlagsException** when you give any Kwargs that are not supported.
-
-        Supported Parameters can be found at: https://aniapi.com/docs/resources/anime/#parameters-1 page.
-
-        :param _id: ID of the Anime [OPTIONAL]
-        :param kwargs: Used for specific anime search.
-        :return: Dictionary with the response
-        """
         invalid = set(kwargs) - set(ANIME_REQ)
 
         if invalid:
             raise InvalidParamsException(f'Invalid parameters: {invalid}')
 
-        self.request('GET', f'/{API_VERSION}/anime/{_id if _id else ""}?{urlencode(kwargs)}', headers=self.headers)
+        res, header = self.get(f'/{API_VERSION}/anime/{_id if _id else ""}?{urlencode(kwargs)}', headers=self.headers)
+        data = json.loads(res.decode('utf-8'))
 
-        res = self.getresponse()
-        pprint.pprint(dict(res.headers))  # debug
-        res_read = res.read()
-        data = json.loads(res_read.decode('utf-8'))
-
+        data['ratelimit'] = get_ratelimit(header)
         if _id is not None:
             data['data'] = AnimeObj(**data['data'])
-            return ContextObj(**data)
+            return ctx(**data)
 
         data['data']['documents'] = [AnimeObj(**anime) for anime in data['data']['documents']]
-        # print(data)
         data['data'] = DataObj(**data['data'])
-        return ContextObj(**data)
+        return ctx(**data)
 
-    def get_random_anime(self, count: int = 1, nsfw: bool = False) -> Anime:
-        """
-        Get a random Anime object.
+    def get_random_anime(self, count: int = 1, nsfw: bool = False) -> ctx:
+        """ Get one or more random Animes from the API.
 
-        i.e. `client.get_random_anime(1, True)` - This will return an object of 1 random Anime with NSFW content.
+        Parameters
+        ----------
+        count :
+        nsfw :
 
-        :param count: (int) --
-            Give an amount of Anime to get
-        :param nsfw: (bool) --
-            Is it safe for work? right?
-        :return: object.Anime --
-            Dictionary with the response
+        Returns
+        -------
+
         """
 
         self.request('GET', f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
@@ -113,7 +148,7 @@ class AniApi(http.client.HTTPSConnection):
         return AnimeObj(**data.get('data')[0])
 
     # Here comes all the Episode related methods.
-    def get_episode(self, _id=None) -> dict:
+    def get_episode(self, _id=None) -> ctx:
         """
         Get an Episode with the related ID.
 
@@ -128,13 +163,27 @@ class AniApi(http.client.HTTPSConnection):
 
 
 if __name__ == '__main__':
+    test = False
     start = time.time()
-    client = AniApi(token=API_TOKEN)
-    data: Context = client.get_anime()
 
-    # for i in data:
-    #     print(i)
-    # print(data)
+    client = AniApi(token=API_TOKEN)
+
+    if not test:
+        data: ctx = client.get_anime(1, status=0)
+        print(data)
+    else:
+        f = 0
+        time_list = []
+
+        for f in range(10):  # FOR PERFORMANCE TESTING
+            start_time = time.time()
+            client.get_anime()
+            time_list.append(time.time() - start_time)
+
+        print(f'{sum(time_list) / 10:.2f}')
+
+
+
     end = time.time()
 
     print(f'Time: {(end - start):.2f}s')
