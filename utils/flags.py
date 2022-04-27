@@ -10,3 +10,8 @@ ANIME_REQ = ['title',
              'nsfw',
              'with_episodes',
              'page']
+
+EPISODE_REQ = ['anime_id',
+               'number',
+               'locale',
+               'is_dub']

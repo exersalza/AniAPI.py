@@ -21,24 +21,18 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-import http.client
 import json
-import pprint
 import time
-
+from typing import NamedTuple
 from urllib.parse import urlencode
-from typing import Union, List
 
-from _types.anime import Anime
 from _types.context import Context
-
 from config import API_TOKEN
 from connection import ApiConnection
-from objectcreator import AnimeObj, DataObj, RateLimit
-from utils import InvalidParamsException, ANIME_REQ
 from constants import API_VERSION, DEFAULT_HEADER
-
-from context import Context as ctx
+from objectcreator import AnimeObj, DataObj, RateLimit, EpisodeObj
+from objectcreator import Context as Ctx
+from utils import InvalidParamsException, ANIME_REQ, EPISODE_REQ
 
 
 def get_ratelimit(res: dict) -> RateLimit:
@@ -79,7 +73,7 @@ class AniApi(ApiConnection):
         self.headers = DEFAULT_HEADER(token)
 
     # Here comes all the Anime related methods.
-    def get_anime(self, _id=None, **kwargs) -> ctx:
+    def get_anime(self, _id: int = '', **kwargs) -> Ctx:
         r""" Get an Anime object list from the API.
         You can provide an ID or query parameters to get a single AnimeObject (:class:`Anime`) or an :class:`list` of objects.
 
@@ -87,7 +81,8 @@ class AniApi(ApiConnection):
         ----------
         _id : Optional[:class:`int`]
             The ID for the Anime you want to get. Beware it's **not** the mal_id, tmdb_id or the anilist_id they
-            can be different and getting handeld by the `**kwargs` parameter.
+            can be different and getting handeld by the `**kwargs` parameter. When you provide an ID, you can't use the
+            `**kwargs` parameter.
 
         **kwargs : Optional[:class:`dict`]
             The parameters that you want to use to spice up your request.
@@ -116,19 +111,22 @@ class AniApi(ApiConnection):
         if invalid:
             raise InvalidParamsException(f'Invalid parameters: {invalid}')
 
-        res, header = self.get(f'/{API_VERSION}/anime/{_id if _id else ""}?{urlencode(kwargs)}', headers=self.headers)
-        data = json.loads(res.decode('utf-8'))
+        res, header = self.get(f'/{API_VERSION}/anime/{_id}?{urlencode(kwargs)}', headers=self.headers)
+        data = self.__create_data_dict(res, header)
 
-        data['ratelimit'] = get_ratelimit(header)
-        if _id is not None:
+        if _id:
+            print(data)
             data['data'] = AnimeObj(**data['data'])
-            return ctx(**data)
+            print(data['data'])
+            return Ctx(**data)
 
-        data['data']['documents'] = [AnimeObj(**anime) for anime in data['data']['documents']]
-        data['data'] = DataObj(**data['data'])
-        return ctx(**data)
+        if data['data']:
+            data['data']['documents'] = (AnimeObj(**anime) for anime in data['data']['documents'])
+            data['data'] = DataObj(**data['data'])
 
-    def get_random_anime(self, count: int = 1, nsfw: bool = False) -> ctx:
+        return Ctx(**data)
+
+    def get_random_anime(self, count: int = 1, nsfw: bool = False) -> Ctx:
         """ Get one or more random Animes from the API.
 
         Parameters
@@ -141,7 +139,7 @@ class AniApi(ApiConnection):
 
         Returns
         -------
-        :class:`ctx`
+        :class:`Ctx`
             Context object with the query returns and the rate limit information.
 
         Raises
@@ -154,25 +152,47 @@ class AniApi(ApiConnection):
             raise ValueError('Count must be less than 50 and more or equal to 1')
 
         res, header = self.get(f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
+        data = self.__create_data_dict(res, header)
 
-        data = json.loads(res.decode('utf-8'))
-        data['ratelimit'] = get_ratelimit(header)
-        data['data'] = [AnimeObj(**anime) for anime in data['data']]
-        return ctx(**data)
+        data['data'] = (AnimeObj(**anime) for anime in data['data'])
+        return Ctx(**data)
 
     # Here comes all the Episode related methods.
-    def get_episode(self, _id=None) -> ctx:
-        """
-        Get an Episode with the related ID.
-
-        :param _id: ID of the Episode
-        :return: Dictionary with the response
+    def get_episode(self, _id: int = '', **kwargs) -> Ctx:
         """
 
-        self.request('GET', f'/{API_VERSION}/episode/{_id if _id else ""}', headers=self.headers)
+        Parameters
+        ----------
+        _id :
+        kwargs :
 
-        res = self.getresponse()
-        return json.loads(res.read().decode('utf-8'))
+        Returns
+        -------
+
+        """
+
+        invalid = set(kwargs) - set(EPISODE_REQ)
+
+        if invalid:
+            raise InvalidParamsException(f'Invalid parameters: {invalid}')
+
+        res, headers = self.get(f'/{API_VERSION}/episode/{_id}?{urlencode(kwargs)}', headers=self.headers)
+        data = self.__create_data_dict(res, headers)
+
+        if _id:
+            data['data'] = EpisodeObj(**data['data'])
+            return Ctx(**data)
+
+        if data['data']:
+            data['data']['documents'] = [EpisodeObj(**episode) for episode in data['data']['documents']]
+            data['data'] = DataObj(**data['data'])
+        return Ctx(**data)
+
+    @staticmethod
+    def __create_data_dict(res: bytes, header: dict) -> dict:
+        data: dict = json.loads(res.decode('utf-8'))
+        data['ratelimit'] = get_ratelimit(header)
+        return data
 
 
 if __name__ == '__main__':
@@ -182,20 +202,21 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        data: ctx = client.get_random_anime(1)
-        print(data)
+        _data: Ctx = client.get_episode()
+        print(_data)
     else:
-        f = 0
-        time_list = []
+        f = 20
+        time_list = ()
 
-        for f in range(10):  # FOR PERFORMANCE TESTING
+        for f in range(f):  # FOR PERFORMANCE TESTING
             start_time = time.time()
-            client.get_anime()
-            time_list.append(time.time() - start_time)
+            _data = client.get_anime()
+            time_list += (time.time() - start_time,)
+            print(_data)
 
-        print(f'{sum(time_list) / 10:.2f}')
+        print(f'{sum(time_list) / f:.3f}s')
 
     end = time.time()
 
-    print(f'Time: {(end - start):.2f}s')
+    print(f'Time: {(end - start):.3f}s')
     # print(client.get_anime(_id=1))
