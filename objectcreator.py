@@ -1,4 +1,4 @@
-from typing import List, Union, Any, Tuple
+from typing import List, Union, Any
 
 
 class DataObj:
@@ -280,3 +280,45 @@ class AnimeObj:
 
     def __repr__(self) -> str:
         return f'<id={self.id} title={list(self.__titles.values())[0]!r} nsfw={self.__nsfw}>'
+
+
+class SongObj:
+    def __init__(self, **kwargs):
+        self.__id = kwargs.get('id')
+        self.__anime_id = kwargs.get('anime_id')
+        self.__title = kwargs.get('title')
+        self._artist = kwargs.get('artist')
+        self.__album = kwargs.get('album')
+        self.__year = kwargs.get('year')
+        self.__season = kwargs.get('season')
+
+    @property
+    def id(self) -> int:
+        return self.__id
+
+    @property
+    def anime_id(self) -> int:
+        return self.__anime_id
+
+    @property
+    def title(self) -> str:
+        return self.__title
+
+    @property
+    def artist(self) -> str:
+        return self._artist
+
+    @property
+    def album(self) -> str:
+        return self.__album
+
+    @property
+    def year(self) -> int:
+        return self.__year
+
+    @property
+    def season(self) -> str:
+        return self.__season
+
+    def __repr__(self) -> str:
+        return f'<id={self.id} title={self.title!r} artist={self.artist!r}>'

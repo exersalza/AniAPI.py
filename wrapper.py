@@ -199,6 +199,9 @@ class AniApi(ApiConnection):
             data['data'] = DataObj(**data['data'])
         return Ctx(**data)
 
+    def get_song(self, _id: int = '', **kwargs) -> Ctx:
+        pass
+
     @staticmethod
     def __create_data_dict(res: bytes, header: dict) -> dict:
         data: dict = json.loads(res.decode('utf-8'))
