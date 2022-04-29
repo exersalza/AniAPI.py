@@ -156,16 +156,30 @@ class AniApi(ApiConnection):
 
     # Here comes all the Episode related methods.
     def get_episode(self, _id: int = '', **kwargs) -> Ctx:
-        """
+        """ Get an Episode from the API.
 
         Parameters
         ----------
-        _id :
-        kwargs :
+        _id : Optional[:class:`int`]
+            Give an ID to get a Specific Episode, note that all other parameters get dumped when you provide an ID.
+
+        **kwargs :
+            Apply filter like `anime_id` or enter a `pagination` valid filter can be found inside the `utils.flags` file.
 
         Returns
         -------
+        :class:`Ctx`
 
+        Raises
+        -------
+        InvalidFlagsException
+
+        Examples
+        ---------
+        >>> from wrapper import AniApi
+        >>> api = AniApi(token='your_token')
+        >>> api.get_episode(1)  # Get Episode with ID 1
+        <status_code=200 message='Episode found' data=<id=1 anime_id=1 number=1 locale=en> version='1'>
         """
 
         invalid = set(kwargs) - set(EPISODE_REQ)
@@ -199,7 +213,7 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: Ctx = client.get_anime()
+        _data: Ctx = client.get_episode(1)
         print(_data)
     else:
         f = 20
@@ -209,7 +223,7 @@ if __name__ == '__main__':
             start_time = time.time()
             _data = client.get_anime()
             time_list += (time.time() - start_time,)
-            print(_data)
+            # print(_data)
 
         print(f'{sum(time_list) / f:.3f}s')
 
