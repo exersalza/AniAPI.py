@@ -137,7 +137,7 @@ class EpisodeObj:
         return self.__is_dub
 
     def __repr__(self):
-        return f'<id={self.__id} anime_id={self.__anime_id} quality={self.__quality} format={self.__format}>'
+        return f'<id={self.__id} anime_id={self.__anime_id} number={self.__number} locale={self.__locale}>'
 
 
 class AnimeObj:
@@ -279,4 +279,4 @@ class AnimeObj:
         return self.__recommendations
 
     def __repr__(self) -> str:
-        return f'<id={self.id} title={list(self.__titles.values())[0]!r}>'
+        return f'<id={self.id} title={list(self.__titles.values())[0]!r} nsfw={self.__nsfw}>'

@@ -23,7 +23,6 @@
 
 import json
 import time
-from typing import NamedTuple
 from urllib.parse import urlencode
 
 from _types.context import Context
@@ -115,13 +114,11 @@ class AniApi(ApiConnection):
         data = self.__create_data_dict(res, header)
 
         if _id:
-            print(data)
             data['data'] = AnimeObj(**data['data'])
-            print(data['data'])
             return Ctx(**data)
 
         if data['data']:
-            data['data']['documents'] = (AnimeObj(**anime) for anime in data['data']['documents'])
+            data['data']['documents'] = [AnimeObj(**anime) for anime in data['data']['documents']]
             data['data'] = DataObj(**data['data'])
 
         return Ctx(**data)
@@ -154,7 +151,7 @@ class AniApi(ApiConnection):
         res, header = self.get(f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
         data = self.__create_data_dict(res, header)
 
-        data['data'] = (AnimeObj(**anime) for anime in data['data'])
+        data['data'] = [AnimeObj(**anime) for anime in data['data']]
         return Ctx(**data)
 
     # Here comes all the Episode related methods.
@@ -202,7 +199,7 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: Ctx = client.get_episode()
+        _data: Ctx = client.get_anime()
         print(_data)
     else:
         f = 20

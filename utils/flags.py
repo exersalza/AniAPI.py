@@ -1,3 +1,11 @@
+# for more information look at: https://aniapi.com/docs/pagination
+PAGINATION = ['page',
+              'locale',
+              'per_page',
+              'ids',
+              'sort_fields',
+              'sort_directions']
+
 ANIME_REQ = ['title',
              'anilist_id',
              'mal_id',
@@ -8,10 +16,10 @@ ANIME_REQ = ['title',
              'season',
              'genres',
              'nsfw',
-             'with_episodes',
-             'page']
+             'with_episodes'] + PAGINATION
 
 EPISODE_REQ = ['anime_id',
                'number',
-               'locale',
-               'is_dub']
+               'is_dub',
+               'locale'] + PAGINATION
+
