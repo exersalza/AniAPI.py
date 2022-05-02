@@ -29,7 +29,7 @@ from _types.context import Context
 from config import API_TOKEN
 from connection import ApiConnection
 from constants import API_VERSION, DEFAULT_HEADER
-from objectcreator import AnimeObj, DataObj, RateLimit, EpisodeObj
+from objectcreator import AnimeObj, DataObj, RateLimit, EpisodeObj, SongObj
 from objectcreator import Context as Ctx
 from utils import InvalidParamsException, ANIME_REQ, EPISODE_REQ
 
@@ -145,7 +145,7 @@ class AniApi(ApiConnection):
             The count can't be less than 1 or more than 50. The api return 50 at max.
 
         """
-        if 1 > count < 50:
+        if count > 50 or count < 1:
             raise ValueError('Count must be less than 50 and more or equal to 1')
 
         res, header = self.get(f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
@@ -199,9 +199,21 @@ class AniApi(ApiConnection):
             data['data'] = DataObj(**data['data'])
         return Ctx(**data)
 
+    # Here are the song related methods.
     def get_song(self, _id: int = '', **kwargs) -> Ctx:
         pass
 
+    def get_random_song(self, count: int = 1) -> Ctx:
+        if count > 50 or count < 1:
+            raise ValueError('Count must be less than 50 and more or equal to 1')
+
+        res, header = self.get(f'/{API_VERSION}/random/song/{count}', headers=self.headers)
+        data = self.__create_data_dict(res, header)
+
+        data['data'] = [SongObj(**song) for song in data['data']]
+        return Ctx(**data)
+
+    # some static methods for converting
     @staticmethod
     def __create_data_dict(res: bytes, header: dict) -> dict:
         data: dict = json.loads(res.decode('utf-8'))
@@ -216,7 +228,7 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: Ctx = client.get_episode(1)
+        _data: Ctx = client.get_random_song(0)
         print(_data)
     else:
         f = 20
