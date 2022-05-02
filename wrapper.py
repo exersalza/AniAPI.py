@@ -204,6 +204,21 @@ class AniApi(ApiConnection):
         pass
 
     def get_random_song(self, count: int = 1) -> Ctx:
+        """
+        It's the same as get_random_anime but for another endpoint and without nsfw tag.
+
+        Parameters
+        ----------
+        count : :class:`int`
+            The amount of songs you want to get. Value should be between 1 and 50.
+            When you go over the value you get 50 at max. so I set a cap at 50.
+
+        Returns
+        -------
+        :class:`Ctx`
+            Context object with the query returns and the rate limit information.
+
+        """
         if count > 50 or count < 1:
             raise ValueError('Count must be less than 50 and more or equal to 1')
 
