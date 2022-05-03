@@ -33,3 +33,10 @@ class InvalidParamsException(BaseException):
     This exception is raised when an invalid parameter is given.
     """
     pass
+
+
+class InvalidParamsValueException(BaseException):
+    """
+    This exception is raised when an invalid parameter value is given.
+    """
+    pass

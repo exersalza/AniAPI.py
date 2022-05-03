@@ -71,7 +71,7 @@ class AniApi(ApiConnection):
         # Define default headers with token
         self.headers = DEFAULT_HEADER(token)
 
-    def get_requests(self, _id, url, kwargs, obj) -> dict:
+    def get_requests(self, _id, url, params, obj) -> dict:
         """ For development method. this method will be used later to make it easier to implement new endpoints.
 
         Parameters
@@ -80,7 +80,7 @@ class AniApi(ApiConnection):
             The id for the url for a specific endpoint e.s. `/anime/{id}`.
         url : [:class:`str`]
             The url identifier for the endpoint e.s. `anime`.
-        kwargs : [:class:`dict`]
+        params : [:class:`dict`]
             The extra filter arguments to deliver
         obj : [:class:`object`]
             The object for the conversion
@@ -91,14 +91,19 @@ class AniApi(ApiConnection):
             The converted response
 
         """
-        res, headers = self.get(f'/{API_VERSION}/{url}/{_id}?{urlencode(kwargs)}', headers=self.headers)
+        res, headers = self.get(f'/{API_VERSION}/{url}/{_id}?{urlencode(params)}', headers=self.headers)
         data = self.__create_data_dict(res, headers)
 
         if _id:
             data['data'] = obj(**data['data'])
             return data
 
-        if data['data']:
+        try:
+            f = data['data']
+        except KeyError:
+            raise InvalidParamsException(f'Something bad happens on the parameters -> {params}')
+
+        if data.get('data', False):
             data['data']['documents'] = [obj(**i) for i in data['data']['documents']]
             data['data'] = DataObj(**data['data'])
 
@@ -209,7 +214,7 @@ class AniApi(ApiConnection):
         invalid = set(kwargs) - set(EPISODE_REQ)
 
         if invalid:
-            raise InvalidParamsException(f'Invalid parameters: {invalid}')
+            raise InvalidParamsValuesException(f'Invalid parameters: {invalid}')
 
         data = self.get_requests(_id, 'episode', kwargs, EpisodeObj)
         return Ctx(**data)
@@ -264,7 +269,7 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: Ctx = client.get_song(page=2)
+        _data: Ctx = client.get_song(page=0)
         print(_data)
     else:
         f = 20
@@ -272,7 +277,7 @@ if __name__ == '__main__':
 
         for f in range(f):  # FOR PERFORMANCE TESTING
             start_time = time.time()
-            _data = client.get_anime()
+            _data = client.get_song()
             time_list += (time.time() - start_time,)
             # print(_data)
 
