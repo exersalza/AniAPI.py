@@ -31,7 +31,7 @@ from connection import ApiConnection
 from constants import API_VERSION, DEFAULT_HEADER
 from objectcreator import AnimeObj, DataObj, RateLimit, EpisodeObj, SongObj
 from objectcreator import Context as Ctx
-from utils import InvalidParamsException, ANIME_REQ, EPISODE_REQ, SONG_REQ
+from utils import InvalidParamsException, ANIME_REQ, EPISODE_REQ, SONG_REQ, InvalidParamsValueException
 
 
 def get_ratelimit(res: dict) -> RateLimit:
@@ -214,7 +214,7 @@ class AniApi(ApiConnection):
         invalid = set(kwargs) - set(EPISODE_REQ)
 
         if invalid:
-            raise InvalidParamsValuesException(f'Invalid parameters: {invalid}')
+            raise InvalidParamsValueException(f'Invalid parameters: {invalid}')
 
         data = self.get_requests(_id, 'episode', kwargs, EpisodeObj)
         return Ctx(**data)
