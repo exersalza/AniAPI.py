@@ -31,7 +31,7 @@ from connection import ApiConnection
 from constants import API_VERSION, DEFAULT_HEADER
 from objectcreator import AnimeObj, DataObj, RateLimit, EpisodeObj, SongObj
 from objectcreator import Context as Ctx
-from utils import InvalidParamsException, ANIME_REQ, EPISODE_REQ
+from utils import InvalidParamsException, ANIME_REQ, EPISODE_REQ, SONG_REQ
 
 
 def get_ratelimit(res: dict) -> RateLimit:
@@ -70,6 +70,39 @@ class AniApi(ApiConnection):
 
         # Define default headers with token
         self.headers = DEFAULT_HEADER(token)
+
+    def get_requests(self, _id, url, kwargs, obj) -> dict:
+        """ For development method. this method will be used later to make it easier to implement new endpoints.
+
+        Parameters
+        ----------
+        _id : [:class:`int`]
+            The id for the url for a specific endpoint e.s. `/anime/{id}`.
+        url : [:class:`str`]
+            The url identifier for the endpoint e.s. `anime`.
+        kwargs : [:class:`dict`]
+            The extra filter arguments to deliver
+        obj : [:class:`object`]
+            The object for the conversion
+
+        Returns
+        -------
+        :class:`dict`
+            The converted response
+
+        """
+        res, headers = self.get(f'/{API_VERSION}/{url}/{_id}?{urlencode(kwargs)}', headers=self.headers)
+        data = self.__create_data_dict(res, headers)
+
+        if _id:
+            data['data'] = obj(**data['data'])
+            return data
+
+        if data['data']:
+            data['data']['documents'] = [obj(**i) for i in data['data']['documents']]
+            data['data'] = DataObj(**data['data'])
+
+        return data
 
     # Here comes all the Anime related methods.
     def get_anime(self, _id: int = '', **kwargs) -> Ctx:
@@ -110,16 +143,7 @@ class AniApi(ApiConnection):
         if invalid:
             raise InvalidParamsException(f'Invalid parameters: {invalid}')
 
-        res, header = self.get(f'/{API_VERSION}/anime/{_id}?{urlencode(kwargs)}', headers=self.headers)
-        data = self.__create_data_dict(res, header)
-
-        if _id:
-            data['data'] = AnimeObj(**data['data'])
-            return Ctx(**data)
-
-        if data['data']:
-            data['data']['documents'] = [AnimeObj(**anime) for anime in data['data']['documents']]
-            data['data'] = DataObj(**data['data'])
+        data = self.get_requests(_id, 'anime', kwargs, AnimeObj)
 
         return Ctx(**data)
 
@@ -187,21 +211,18 @@ class AniApi(ApiConnection):
         if invalid:
             raise InvalidParamsException(f'Invalid parameters: {invalid}')
 
-        res, headers = self.get(f'/{API_VERSION}/episode/{_id}?{urlencode(kwargs)}', headers=self.headers)
-        data = self.__create_data_dict(res, headers)
-
-        if _id:
-            data['data'] = EpisodeObj(**data['data'])
-            return Ctx(**data)
-
-        if data['data']:
-            data['data']['documents'] = [EpisodeObj(**episode) for episode in data['data']['documents']]
-            data['data'] = DataObj(**data['data'])
+        data = self.get_requests(_id, 'episode', kwargs, EpisodeObj)
         return Ctx(**data)
 
     # Here are the song related methods.
     def get_song(self, _id: int = '', **kwargs) -> Ctx:
-        pass
+        invalid = set(kwargs) - set(SONG_REQ)
+
+        if invalid:
+            raise InvalidParamsException(f'Invalid parameters: {invalid}')
+
+        data = self.get_requests(_id, 'song', kwargs, SongObj)
+        return Ctx(**data)
 
     def get_random_song(self, count: int = 1) -> Ctx:
         """
@@ -243,7 +264,7 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: Ctx = client.get_random_song(0)
+        _data: Ctx = client.get_song(page=2)
         print(_data)
     else:
         f = 20

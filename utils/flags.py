@@ -23,3 +23,10 @@ EPISODE_REQ = ['anime_id',
                'is_dub',
                'locale'] + PAGINATION
 
+SONG_REQ = ['anime_id',
+            'title',
+            'artist',
+            'year',
+            'season',
+            'type'] + PAGINATION
+

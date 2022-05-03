@@ -34,3 +34,9 @@ class AiringDays(IntEnum):
     Thursday = 4
     Friday = 5
     Saturday = 6
+
+
+class SongTypes(IntEnum):
+    OPENING = 0
+    ENDING = 1
+    NONE = 2

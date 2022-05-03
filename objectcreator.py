@@ -287,10 +287,15 @@ class SongObj:
         self.__id = kwargs.get('id')
         self.__anime_id = kwargs.get('anime_id')
         self.__title = kwargs.get('title')
-        self._artist = kwargs.get('artist')
+        self.__artist = kwargs.get('artist')
         self.__album = kwargs.get('album')
         self.__year = kwargs.get('year')
         self.__season = kwargs.get('season')
+        self.__duration = kwargs.get('duration')
+        self.__preview_url = kwargs.get('preview_url')
+        self.__open_spotify_url = kwargs.get('open_spotify_url')
+        self.__local_spotify_url = kwargs.get('local_spotify_url')
+        self.__type = kwargs.get('type')
 
     @property
     def id(self) -> int:
@@ -306,7 +311,7 @@ class SongObj:
 
     @property
     def artist(self) -> str:
-        return self._artist
+        return self.__artist
 
     @property
     def album(self) -> str:
@@ -319,6 +324,26 @@ class SongObj:
     @property
     def season(self) -> str:
         return self.__season
+
+    @property
+    def duration(self) -> int:
+        return self.__duration
+
+    @property
+    def preview_url(self) -> str:
+        return self.__preview_url
+
+    @property
+    def open_spotify_url(self) -> str:
+        return self.__open_spotify_url
+
+    @property
+    def local_spotify_url(self) -> str:
+        return self.__local_spotify_url
+
+    @property
+    def type(self) -> str:
+        return self.__type
 
     def __repr__(self) -> str:
         return f'<id={self.id} title={self.title!r} artist={self.artist!r}>'
