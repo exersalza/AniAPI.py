@@ -24,7 +24,6 @@
 import time
 from urllib.parse import urlencode
 
-from _types.context import Context
 from connection import ApiConnection
 from constants import API_VERSION, DEFAULT_HEADER
 from dataproc import create_data_dict
