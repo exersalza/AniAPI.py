@@ -1,8 +1,9 @@
-from typing import List, Union, Any, Tuple
+from typing import List, Union, Any
 
 
 class DataObj:
     """ This class converts the Dict output to an DataObj """
+
     def __init__(self, **kwargs):
         self.__current_page = kwargs.get('current_page')
         self.__count = kwargs.get('count')
@@ -280,3 +281,127 @@ class AnimeObj:
 
     def __repr__(self) -> str:
         return f'<id={self.id} title={list(self.__titles.values())[0]!r} nsfw={self.__nsfw}>'
+
+
+class SongObj:
+    def __init__(self, **kwargs):
+        self.__id = kwargs.get('id')
+        self.__anime_id = kwargs.get('anime_id')
+        self.__title = kwargs.get('title')
+        self.__artist = kwargs.get('artist')
+        self.__album = kwargs.get('album')
+        self.__year = kwargs.get('year')
+        self.__season = kwargs.get('season')
+        self.__duration = kwargs.get('duration')
+        self.__preview_url = kwargs.get('preview_url')
+        self.__open_spotify_url = kwargs.get('open_spotify_url')
+        self.__local_spotify_url = kwargs.get('local_spotify_url')
+        self.__type = kwargs.get('type')
+
+    @property
+    def id(self) -> int:
+        return self.__id
+
+    @property
+    def anime_id(self) -> int:
+        return self.__anime_id
+
+    @property
+    def title(self) -> str:
+        return self.__title
+
+    @property
+    def artist(self) -> str:
+        return self.__artist
+
+    @property
+    def album(self) -> str:
+        return self.__album
+
+    @property
+    def year(self) -> int:
+        return self.__year
+
+    @property
+    def season(self) -> str:
+        return self.__season
+
+    @property
+    def duration(self) -> int:
+        return self.__duration
+
+    @property
+    def preview_url(self) -> str:
+        return self.__preview_url
+
+    @property
+    def open_spotify_url(self) -> str:
+        return self.__open_spotify_url
+
+    @property
+    def local_spotify_url(self) -> str:
+        return self.__local_spotify_url
+
+    @property
+    def type(self) -> str:
+        return self.__type
+
+    def __repr__(self) -> str:
+        return f'<id={self.id} title={self.title!r} artist={self.artist!r}>'
+
+
+class AuthMeObj:
+    def __init__(self, **kwargs):
+        self.__username = kwargs.pop('username')
+        self.__email = kwargs.pop('email')
+        self.__email_verified = kwargs.pop('email_verified')
+        self.__role = kwargs.pop('role')
+        self.__gender = kwargs.pop('gender')
+        self.__avatar_tracker = kwargs.pop('avatar_tracker')
+        self.__localization = kwargs.pop('localization')
+        self.__has_anilist = kwargs.pop('has_anilist')
+        self.__has_mal = kwargs.pop('has_mal')
+        self.__id = kwargs.pop('id')
+
+    @property
+    def username(self) -> str:
+        return self.__username
+
+    @property
+    def email(self) -> str:
+        return self.__email
+
+    @property
+    def email_verified(self) -> bool:
+        return self.__email_verified
+
+    @property
+    def role(self) -> str:
+        return self.__role
+
+    @property
+    def gender(self) -> int:
+        return self.__gender
+
+    @property
+    def avatar_tracker(self) -> str:
+        return self.__avatar_tracker
+
+    @property
+    def localization(self) -> str:
+        return self.__localization
+
+    @property
+    def has_anilist(self) -> bool:
+        return self.__has_anilist
+
+    @property
+    def has_mal(self) -> bool:
+        return self.__has_mal
+
+    @property
+    def id(self) -> int:
+        return self.__id
+
+    def __repr__(self) -> str:
+        return f'<id={self.id} username={self.username!r} email_verified={self.email_verified}>'

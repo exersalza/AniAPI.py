@@ -1,2 +1,3 @@
 # Here is the ToDo list
-* [ ] Convert the outcomes from the request into an Object
+* [X] Convert the outcomes from the request into an Object
+* [ ] Create for the get_anime methods a get_anime_id method

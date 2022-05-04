@@ -1,7 +1,7 @@
 from typing import TypedDict
 
-from .ratelimit import RateLimit
 from .data import Data
+from .ratelimit import RateLimit
 
 
 class Context(TypedDict):

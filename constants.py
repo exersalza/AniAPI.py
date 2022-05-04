@@ -22,6 +22,8 @@
 
 API_VERSION = 'v1'  # Please let the 'v' at the beginning otherwise it will not work
 
-DEFAULT_HEADER = lambda jwt: {'Authorization': f'Bearer {jwt}',
-                              'Content-Type': 'application/json',
-                              'Accept': 'application/json'}
+
+def DEFAULT_HEADER(jwt):
+    return {'Authorization': f'Bearer {jwt}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'}
