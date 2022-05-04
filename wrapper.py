@@ -34,7 +34,7 @@ from utils import (InvalidParamsException,
                    ANIME_REQ,
                    EPISODE_REQ,
                    SONG_REQ,
-                   InvalidParamsValueException, InvalidTokenError)
+                   InvalidParamsValueException)
 
 
 class AniApi(ApiConnection):
@@ -78,8 +78,8 @@ class AniApi(ApiConnection):
         -------
         :class:`dict`
             The converted response
-
         """
+
         res, headers = self.get(f'/{API_VERSION}/{url}/{_id}?{urlencode(params)}', headers=self.headers)
         data = create_data_dict(res, headers)
 
@@ -157,8 +157,8 @@ class AniApi(ApiConnection):
         -------
         ValueError
             The count can't be less than 1 or more than 50. The api return 50 at max.
-
         """
+
         if count > 50 or count < 1:
             raise ValueError('Count must be less than 50 and more or equal to 1')
 
@@ -221,8 +221,8 @@ class AniApi(ApiConnection):
         -------
         :class:`Ctx`
             A context object with the query returns and the rate limit information.
-
         """
+
         invalid = set(kwargs) - set(SONG_REQ)
 
         if invalid:
@@ -245,8 +245,8 @@ class AniApi(ApiConnection):
         -------
         :class:`Ctx`
             Context object with the query returns and the rate limit information.
-
         """
+
         if count > 50 or count < 1:
             raise ValueError('Count must be less than 50 and more or equal to 1')
 
@@ -258,11 +258,25 @@ class AniApi(ApiConnection):
 
     # Auth me.
     def auth_me(self, jwt) -> Ctx:
+        """
+        This method will test the given token and return the user information (if it exists and its valid).
+
+        Parameters
+        ----------
+        jwt : :class:`str`
+            The JWT token to test.
+
+        Returns
+        -------
+        :class:`Ctx`
+            A context object with the response. If the token is invalid you will get a status code of 401.
+        """
+
         res, header = self.get(f'/{API_VERSION}/auth/me', headers=DEFAULT_HEADER(jwt))
         data = create_data_dict(res, header)
 
-        if data.get('status_code', 401) != 200:
-            raise InvalidTokenError(data.get('data'))
+        if data.get('status_code', 404) != 200:
+            return Ctx(**data)
 
         data['data'] = AuthMeObj(**data.get('data'))
         return Ctx(**data)

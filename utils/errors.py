@@ -21,13 +21,6 @@
 #  SOFTWARE.
 
 
-class InvalidTokenError(BaseException):
-    """
-    This exception is raised when an invalid token is given.
-    """
-    pass
-
-
 class InvalidParamsException(BaseException):
     """
     This exception is raised when an invalid parameter is given.
