@@ -40,16 +40,19 @@ from utils import (InvalidParamsException,
 class AniApi(ApiConnection):
     def __init__(self, token: str = ''):
         """ This is the Base Class for the AniApi wrapper.
-        This clas will only contain the Anime and Song requests, and will be extended by the other classes.
+        This clas will only contain the Anime and Song requests,
+        and will be extended by the other classes.
 
-        In this class you will find other than the standard requests the `auth me` requests, when you want them
-        oAuth stuff please use the :class:`AniApiOAuth` class, it's a subclass of this class.
+        In this class you will find other than the standard requests the `auth me` requests,
+        when you want them oAuth stuff please use the :class:`AniApiOAuth` class,
+        it's a subclass of this class.
 
         Attributes:
         -----------
         token : [:class:`str`]
             The API Token you get from https://aniapi.com/profile.
-            You will only need this token when you want to use things from outer scope than the `GET` methods.
+            You will only need this token when you want to use things
+            from outer scope than the `GET` methods.
 
         timeout : [:class:`int`]
             The timeout for the connection.
@@ -61,7 +64,8 @@ class AniApi(ApiConnection):
         self.headers = DEFAULT_HEADER(token)
 
     def get_requests(self, _id, url, params, obj) -> dict:
-        """ For development method. this method will be used later to make it easier to implement new endpoints.
+        """ For development method. this method will be used later to make it easier
+        to implement new endpoints.
 
         Parameters
         ----------
@@ -102,8 +106,10 @@ class AniApi(ApiConnection):
         Parameters:
         ----------
         anime_id : Optional[:class:`int`]
-            The ID for the Anime you want to get. Beware it's **not** the mal_id, tmdb_id or the anilist_id they
-            can be different and getting handeld by the `**kwargs` parameter. When you provide an ID, you can't use the
+            The ID for the Anime you want to get. Beware it's **not** the mal_id,
+            tmdb_id or the anilist_id they
+            can be different and getting handeld by the `**kwargs` parameter.
+            When you provide an ID, you can't use the
             `**kwargs` parameter.
 
         **kwargs : Optional[:class:`dict`]
@@ -175,10 +181,12 @@ class AniApi(ApiConnection):
         Parameters
         ----------
         episode_id : Optional[:class:`int`]
-            Give an ID to get a Specific Episode, note that all other parameters get dumped when you provide an ID.
+            Give an ID to get a Specific Episode, note that all other
+            parameters get dumped when you provide an ID.
 
         **kwargs :
-            Apply filter like `anime_id` or enter a `pagination` valid filter can be found inside the `utils.flags` file.
+            Apply filter like `anime_id` or enter a `pagination` valid filter
+            can be found inside the `utils.flags` file.
 
         Returns
         -------
@@ -211,10 +219,12 @@ class AniApi(ApiConnection):
         Parameters
         ----------
         song_id : Optional[:class:`int`]
-            Give an ID to get a Specific Song, note that all other parameters get dumped when you provide an ID.
+            Give an ID to get a Specific Song, note that all other parameters
+            get dumped when you provide an ID.
 
         kwargs : Optional[:class:`dict`]
-            Apply filter like `anime_id` or enter a `pagination` valid filter can be found inside the `utils.flags` file
+            Apply filter like `anime_id` or enter a `pagination` valid filter can
+            be found inside the `utils.flags` file
             or at the docs: https://aniapi.com/docs/resources/song#parameters-1
 
         Returns
@@ -259,7 +269,8 @@ class AniApi(ApiConnection):
     # Auth me.
     def auth_me(self, jwt) -> Ctx:
         """
-        This method will test the given token and return the user information (if it exists and its valid).
+        This method will test the given token and return the user
+        information (if it exists and its valid).
 
         Parameters
         ----------
@@ -269,7 +280,8 @@ class AniApi(ApiConnection):
         Returns
         -------
         :class:`Ctx`
-            A context object with the response. If the token is invalid you will get a status code of 401.
+            A context object with the response. If the token is invalid you
+            will get a status code of 401.
         """
 
         res, header = self.get(f'/{API_VERSION}/auth/me', headers=DEFAULT_HEADER(jwt))
