@@ -95,13 +95,8 @@ class AniApi(ApiConnection):
         data = self.__create_data_dict(res, headers)
 
         if _id:
-            data['data'] = obj(**data['data'])
+            data['data'] = obj(**data.get('data'))
             return data
-
-        try:
-            _ = data['data']
-        except KeyError:
-            raise InvalidParamsException(f'Something bad happens on the parameters -> {params}')
 
         if data.get('data', False):
             data['data']['documents'] = [obj(**i) for i in data['data']['documents']]
@@ -111,7 +106,7 @@ class AniApi(ApiConnection):
 
     # Here comes all the Anime related methods.
     def get_anime(self, _id: int = '', **kwargs) -> Ctx:
-        r""" Get an Anime object list from the API.
+        """ Get an Anime object list from the API.
         You can provide an ID or query parameters to get a single AnimeObject (:class:`Anime`) or an :class:`list` of objects.
 
         Parameters:
@@ -198,7 +193,7 @@ class AniApi(ApiConnection):
         Returns
         -------
         :class:`Ctx`
-
+            A context object with the query returns and the rate limit information.
         Raises
         -------
         InvalidFlagsException
