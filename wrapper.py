@@ -313,11 +313,9 @@ if __name__ == '__main__':
             start_time = time.time()
             _data = client.get_song()
             time_list += (time.time() - start_time,)
-            # print(_data)
 
         print(f'{sum(time_list) / f:.3f}s')
 
     end = time.time()
 
     print(f'Time: {(end - start):.3f}s')
-    # print(client.get_anime(_id=1))

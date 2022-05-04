@@ -3,6 +3,7 @@ from typing import List, Union, Any
 
 class DataObj:
     """ This class converts the Dict output to an DataObj """
+
     def __init__(self, **kwargs):
         self.__current_page = kwargs.get('current_page')
         self.__count = kwargs.get('count')

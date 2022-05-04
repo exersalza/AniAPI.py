@@ -29,4 +29,3 @@ SONG_REQ = ['anime_id',
             'year',
             'season',
             'type'] + PAGINATION
-

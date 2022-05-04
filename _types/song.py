@@ -16,4 +16,3 @@ class Song(TypedDict):
     open_spotify_url: str
     local_spotify_url: str
     song_type: SongTypes
-

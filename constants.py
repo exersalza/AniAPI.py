@@ -27,4 +27,3 @@ def DEFAULT_HEADER(jwt):
     return {'Authorization': f'Bearer {jwt}',
             'Content-Type': 'application/json',
             'Accept': 'application/json'}
-
