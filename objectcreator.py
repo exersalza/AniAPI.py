@@ -347,3 +347,60 @@ class SongObj:
 
     def __repr__(self) -> str:
         return f'<id={self.id} title={self.title!r} artist={self.artist!r}>'
+
+
+class AuthMeObj:
+    def __init__(self, **kwargs):
+        self.__username = kwargs.pop('username')
+        self.__email = kwargs.pop('email')
+        self.__email_verified = kwargs.pop('email_verified')
+        self.__role = kwargs.pop('role')
+        self.__gender = kwargs.pop('gender')
+        self.__avatar_tracker = kwargs.pop('avatar_tracker')
+        self.__localization = kwargs.pop('localization')
+        self.__has_anilist = kwargs.pop('has_anilist')
+        self.__has_mal = kwargs.pop('has_mal')
+        self.__id = kwargs.pop('id')
+
+    @property
+    def username(self) -> str:
+        return self.__username
+
+    @property
+    def email(self) -> str:
+        return self.__email
+
+    @property
+    def email_verified(self) -> bool:
+        return self.__email_verified
+
+    @property
+    def role(self) -> str:
+        return self.__role
+
+    @property
+    def gender(self) -> int:
+        return self.__gender
+
+    @property
+    def avatar_tracker(self) -> str:
+        return self.__avatar_tracker
+
+    @property
+    def localization(self) -> str:
+        return self.__localization
+
+    @property
+    def has_anilist(self) -> bool:
+        return self.__has_anilist
+
+    @property
+    def has_mal(self) -> bool:
+        return self.__has_mal
+
+    @property
+    def id(self) -> int:
+        return self.__id
+
+    def __repr__(self) -> str:
+        return f'<id={self.id} username={self.username!r} email_verified={self.email_verified}>'

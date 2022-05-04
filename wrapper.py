@@ -25,22 +25,25 @@ import time
 from urllib.parse import urlencode
 
 from _types.context import Context
-from config import API_TOKEN
 from connection import ApiConnection
 from constants import API_VERSION, DEFAULT_HEADER
 from dataproc import create_data_dict
-from objectcreator import AnimeObj, DataObj, EpisodeObj, SongObj
+from objectcreator import AnimeObj, DataObj, EpisodeObj, SongObj, AuthMeObj
 from objectcreator import Context as Ctx
 from utils import (InvalidParamsException,
                    ANIME_REQ,
                    EPISODE_REQ,
                    SONG_REQ,
-                   InvalidParamsValueException)
+                   InvalidParamsValueException, InvalidTokenError)
 
 
 class AniApi(ApiConnection):
     def __init__(self, token: str = ''):
         """ This is the Base Class for the AniApi wrapper.
+        This clas will only contain the Anime and Song requests, and will be extended by the other classes.
+
+        In this class you will find other than the standard requests the `auth me` requests, when you want them
+        oAuth stuff please use the :class:`AniApiOAuth` class, it's a subclass of this class.
 
         Attributes:
         -----------
@@ -253,15 +256,28 @@ class AniApi(ApiConnection):
         data['data'] = [SongObj(**song) for song in data['data']]
         return Ctx(**data)
 
+    # Auth me.
+    def auth_me(self, jwt) -> Ctx:
+        res, header = self.get(f'/{API_VERSION}/auth/me', headers=DEFAULT_HEADER(jwt))
+        data = create_data_dict(res, header)
+
+        if data.get('status_code', 401) != 200:
+            raise InvalidTokenError(data.get('data'))
+
+        data['data'] = AuthMeObj(**data.get('data'))
+        return Ctx(**data)
+
 
 if __name__ == '__main__':
+    from config import API_TOKEN
+
     test = False
     start = time.time()
 
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: Ctx = client.get_song(page=2, per_page=2)
+        _data: Ctx = client.auth_me('')
         print(_data)
     else:
         f = 20
