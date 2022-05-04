@@ -21,7 +21,6 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-import json
 import time
 from urllib.parse import urlencode
 
@@ -29,27 +28,14 @@ from _types.context import Context
 from config import API_TOKEN
 from connection import ApiConnection
 from constants import API_VERSION, DEFAULT_HEADER
-from objectcreator import AnimeObj, DataObj, RateLimit, EpisodeObj, SongObj
+from dataproc import create_data_dict
+from objectcreator import AnimeObj, DataObj, EpisodeObj, SongObj
 from objectcreator import Context as Ctx
-from utils import InvalidParamsException, ANIME_REQ, EPISODE_REQ, SONG_REQ, InvalidParamsValueException
-
-
-def get_ratelimit(res: dict) -> RateLimit:
-    """
-    Extract the rate limit from the response.
-
-    Parameters
-    ----------
-    res : [:class:`http.client.HTTPResponse`]
-        The response from the API.
-
-    Returns
-    -------
-    :class:`RateLimit`
-    """
-    return RateLimit(limit=res.get('X-RateLimit-Limit'),
-                     remaining=res.get('X-RateLimit-Remaining'),
-                     reset=res.get('X-RateLimit-Reset'))
+from utils import (InvalidParamsException,
+                   ANIME_REQ,
+                   EPISODE_REQ,
+                   SONG_REQ,
+                   InvalidParamsValueException)
 
 
 class AniApi(ApiConnection):
@@ -92,7 +78,7 @@ class AniApi(ApiConnection):
 
         """
         res, headers = self.get(f'/{API_VERSION}/{url}/{_id}?{urlencode(params)}', headers=self.headers)
-        data = self.__create_data_dict(res, headers)
+        data = create_data_dict(res, headers)
 
         if _id:
             data['data'] = obj(**data.get('data'))
@@ -105,13 +91,14 @@ class AniApi(ApiConnection):
         return data
 
     # Here comes all the Anime related methods.
-    def get_anime(self, _id: int = '', **kwargs) -> Ctx:
+    def get_anime(self, anime_id: int = '', **kwargs) -> Ctx:
         """ Get an Anime object list from the API.
-        You can provide an ID or query parameters to get a single AnimeObject (:class:`Anime`) or an :class:`list` of objects.
+        You can provide an ID or query parameters to get a single AnimeObject (:class:`Anime`) or an :class:`list`
+        of objects.
 
         Parameters:
         ----------
-        _id : Optional[:class:`int`]
+        anime_id : Optional[:class:`int`]
             The ID for the Anime you want to get. Beware it's **not** the mal_id, tmdb_id or the anilist_id they
             can be different and getting handeld by the `**kwargs` parameter. When you provide an ID, you can't use the
             `**kwargs` parameter.
@@ -143,7 +130,7 @@ class AniApi(ApiConnection):
         if invalid:
             raise InvalidParamsException(f'Invalid parameters: {invalid}')
 
-        data = self.get_requests(_id, 'anime', kwargs, AnimeObj)
+        data = self.get_requests(anime_id, 'anime', kwargs, AnimeObj)
 
         return Ctx(**data)
 
@@ -173,18 +160,18 @@ class AniApi(ApiConnection):
             raise ValueError('Count must be less than 50 and more or equal to 1')
 
         res, header = self.get(f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
-        data = self.__create_data_dict(res, header)
+        data = create_data_dict(res, header)
 
         data['data'] = [AnimeObj(**anime) for anime in data['data']]
         return Ctx(**data)
 
     # Here comes all the Episode related methods.
-    def get_episode(self, _id: int = '', **kwargs) -> Ctx:
+    def get_episode(self, episode_id: int = '', **kwargs) -> Ctx:
         """ Get an Episode from the API.
 
         Parameters
         ----------
-        _id : Optional[:class:`int`]
+        episode_id : Optional[:class:`int`]
             Give an ID to get a Specific Episode, note that all other parameters get dumped when you provide an ID.
 
         **kwargs :
@@ -211,17 +198,34 @@ class AniApi(ApiConnection):
         if invalid:
             raise InvalidParamsValueException(f'Invalid parameters: {invalid}')
 
-        data = self.get_requests(_id, 'episode', kwargs, EpisodeObj)
+        data = self.get_requests(episode_id, 'episode', kwargs, EpisodeObj)
         return Ctx(**data)
 
     # Here are the song related methods.
-    def get_song(self, _id: int = '', **kwargs) -> Ctx:
+    def get_song(self, song_id: int = '', **kwargs) -> Ctx:
+        """ Get from 1 up to 100 songs at the time from the Api
+
+        Parameters
+        ----------
+        song_id : Optional[:class:`int`]
+            Give an ID to get a Specific Song, note that all other parameters get dumped when you provide an ID.
+
+        kwargs : Optional[:class:`dict`]
+            Apply filter like `anime_id` or enter a `pagination` valid filter can be found inside the `utils.flags` file
+            or at the docs: https://aniapi.com/docs/resources/song#parameters-1
+
+        Returns
+        -------
+        :class:`Ctx`
+            A context object with the query returns and the rate limit information.
+
+        """
         invalid = set(kwargs) - set(SONG_REQ)
 
         if invalid:
             raise InvalidParamsException(f'Invalid parameters: {invalid}')
 
-        data = self.get_requests(_id, 'song', kwargs, SongObj)
+        data = self.get_requests(song_id, 'song', kwargs, SongObj)
         return Ctx(**data)
 
     def get_random_song(self, count: int = 1) -> Ctx:
@@ -244,17 +248,10 @@ class AniApi(ApiConnection):
             raise ValueError('Count must be less than 50 and more or equal to 1')
 
         res, header = self.get(f'/{API_VERSION}/random/song/{count}', headers=self.headers)
-        data = self.__create_data_dict(res, header)
+        data = create_data_dict(res, header)
 
         data['data'] = [SongObj(**song) for song in data['data']]
         return Ctx(**data)
-
-    # some static methods for converting
-    @staticmethod
-    def __create_data_dict(res: bytes, header: dict) -> dict:
-        data: dict = json.loads(res.decode('utf-8'))
-        data['ratelimit'] = get_ratelimit(header)
-        return data
 
 
 if __name__ == '__main__':
@@ -264,7 +261,7 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: Ctx = client.get_song(page=0)
+        _data: Ctx = client.get_song(page=2, per_page=2)
         print(_data)
     else:
         f = 20
