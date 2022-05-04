@@ -99,7 +99,7 @@ class AniApi(ApiConnection):
             return data
 
         try:
-            f = data['data']
+            _ = data['data']
         except KeyError:
             raise InvalidParamsException(f'Something bad happens on the parameters -> {params}')
 
