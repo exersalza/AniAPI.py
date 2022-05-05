@@ -42,17 +42,17 @@ class ApiConnection(HTTPSConnection):
         headers : :class:`dict`
             The headers to send with the request. This is for the jwt token and to
             tell the API what we want back from them.
+
         Returns
         -------
         :class:`bytes`
             The read response from the server.
         Notes
         -----
-        The JWT token is momentary not used, but maybe it will be later,
-        so I left it in.
+        The JWT token will be only used for non-read-only requests.
         """
 
-        self.connect()
+        self.connect()  # Connect and disconnect to prevent the connection from being kept open.
 
         self.request('GET', url, headers=headers)
         r = self.getresponse()

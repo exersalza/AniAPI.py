@@ -12,48 +12,82 @@ class DataObj:
 
     @property
     def current_page(self) -> int:
+        """
+        Return the current page of Objects, it can be changed by the `page` parameter in the request
+        """
         return self.__current_page
 
     @property
     def count(self) -> int:
+        """
+        Return the count of objects inside the current response.
+        """
         return self.__count
 
     @property
     def documents(self) -> List[object]:
+        """
+        On List requests this will contain the objects given by the Api.
+        """
         return self.__documents
 
     @property
     def last_page(self) -> int:
+        """
+        The last page that can be accessed
+        """
         return self.__last_page
 
     def __repr__(self):
-        return f'<current_page={self.__current_page} count={self.__count} last_page={self.__last_page} documents={self.__documents}>'
+        """ This returns a stripped representation of the object """
+        return f'<current_page={self.current_page} count={self.count} last_page={self.last_page} documents={self.documents}>'
 
 
 class RateLimit:
     def __init__(self, limit: str, remaining: str, reset: str):
+        """
+        This RateLimit objects contains the information of the ratelimit,
+        later it can be useful to do something like a ratelimit-handler
+        """
+
         self.__limit = limit
         self.__remaining = remaining
         self.__reset = reset
 
     @property
     def limit(self) -> str:
+        """
+        The Limit that was setted by the API owner
+        """
         return self.__limit
 
     @property
     def remaining(self) -> str:
+        """
+        The remaining requests that can be made, will be reset every second
+        """
         return self.__remaining
 
     @property
     def reset(self) -> str:
+        """
+        How long until the reset of the remaining requests
+        """
         return self.__reset
 
     def __repr__(self):
+        """
+        This returns a stripped representation of the object
+        """
         return f'<limit={self.__limit} remaining={self.__remaining} reset={self.__reset}>'
 
 
 class Context:
     def __init__(self, **kwargs):  # Create a Non-changeable object
+        """
+        This is the Basic Context Object for the response
+        """
+
         self.__status_code = kwargs.get('status_code', 404)
         self.__message = kwargs.get('message', 'Not Found')
         self.__data = kwargs.get('data', {})
@@ -62,25 +96,44 @@ class Context:
 
     @property
     def status_code(self) -> int:
+        """
+        The status code of the response, useful for error handling
+        """
         return self.__status_code
 
     @property
     def message(self) -> str:
+        """
+        The message that is given by the api, often times it will contain useful information
+        """
         return f'{self.__message!r}'
 
     @property
-    def data(self) -> Union[Any, List[Any]]:
+    def data(self) -> Union[object, DataObj]:
+        """
+        The data that is given by the api, it can be a list of objects or a single object
+        """
         return self.__data
 
     @property
     def version(self) -> str:
+        """
+        The current version of the api
+        """
         return self.__version
 
     @property
     def ratelimit(self) -> RateLimit:
+        """
+        The ratelimit for the next responses
+        """
         return self.__ratelimit
 
     def __repr__(self):
+        """
+        I know it's getting repetitive, but this returns a stripped representation of the object
+        """
+
         return f'<status_code={self.__status_code} message={self.__message!r} data={self.__data} version={self.__version!r}>'
 
 

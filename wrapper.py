@@ -25,7 +25,7 @@ import time
 from urllib.parse import urlencode
 
 from connection import ApiConnection
-from constants import API_VERSION, DEFAULT_HEADER
+from constants import API_VERSION, default_header
 from dataproc import create_data_dict
 from objectcreator import AnimeObj, DataObj, EpisodeObj, SongObj, AuthMeObj
 from objectcreator import Context as Ctx
@@ -39,8 +39,8 @@ from utils import (InvalidParamsException,
 class AniApi(ApiConnection):
     def __init__(self, token: str = ''):
         """ This is the Base Class for the AniApi wrapper.
-        This clas will only contain the Anime and Song requests,
-        and will be extended by the other classes.
+        This class will only contain the resources given at the docs,
+        oauth will be extended by the other classes.
 
         In this class you will find other than the standard requests the `auth me` requests,
         when you want them oAuth stuff please use the :class:`AniApiOAuth` class,
@@ -50,8 +50,7 @@ class AniApi(ApiConnection):
         -----------
         token : [:class:`str`]
             The API Token you get from https://aniapi.com/profile.
-            You will only need this token when you want to use things
-            from outer scope than the `GET` methods.
+            If your application is inside the read-only scope then you don't need to provide a token.
 
         timeout : [:class:`int`]
             The timeout for the connection.
@@ -60,7 +59,7 @@ class AniApi(ApiConnection):
         super().__init__()
 
         # Define default headers with token
-        self.headers = DEFAULT_HEADER(token)
+        self.headers = default_header(token)
 
     def get_requests(self, _id, url, params, obj) -> dict:
         """ For development method. this method will be used later to make it easier
@@ -265,6 +264,34 @@ class AniApi(ApiConnection):
         data['data'] = [SongObj(**song) for song in data['data']]
         return Ctx(**data)
 
+    # Resource requests
+    def get_resources(self, version: float, type: int) -> Ctx:
+        """ Get the resources of the AniApi
+
+        Parameters
+        ----------
+        version : :class:`float`
+            The version from the resource.
+
+        type : :class:`int`
+            The type of resource you want to get.
+            0 = Anime Genres,
+            1 = Locales
+
+        Returns
+        -------
+        :class:`Ctx`
+            A context object with the query returns and the rate limit information.
+        """
+
+        res, header = self.get(f'/{API_VERSION}/resources/{version}/{type}', headers=self.headers)
+        data = create_data_dict(res, header)
+        return Ctx(**data)
+
+    # User Storys
+    def get_user_story(self, user_id: int, story_id: int) -> Ctx:
+        pass
+
     # Auth me.
     def auth_me(self, jwt) -> Ctx:
         """
@@ -283,7 +310,7 @@ class AniApi(ApiConnection):
             will get a status code of 401.
         """
 
-        res, header = self.get(f'/{API_VERSION}/auth/me', headers=DEFAULT_HEADER(jwt))
+        res, header = self.get(f'/{API_VERSION}/auth/me', headers=default_header(jwt))
         data = create_data_dict(res, header)
 
         if data.get('status_code', 404) != 200:
@@ -302,15 +329,15 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: Ctx = client.auth_me('')
-        print(_data)
+        _data: AuthMeObj = client.auth_me(API_TOKEN).data
+        print(_data.has_anilist)
     else:
         f = 20
         time_list = ()
 
         for f in range(f):  # FOR PERFORMANCE TESTING
             start_time = time.time()
-            _data = client.get_song()
+            _data = client.get_resources(1.0, 1)
             time_list += (time.time() - start_time,)
 
         print(f'{sum(time_list) / f:.3f}s')

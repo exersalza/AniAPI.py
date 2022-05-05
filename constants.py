@@ -23,7 +23,7 @@
 API_VERSION = 'v1'  # Please let the 'v' at the beginning otherwise it will not work
 
 
-def DEFAULT_HEADER(jwt):
+def default_header(jwt):
     return {'Authorization': f'Bearer {jwt}',
             'Content-Type': 'application/json',
             'Accept': 'application/json'}
