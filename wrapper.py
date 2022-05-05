@@ -27,7 +27,7 @@ from urllib.parse import urlencode
 from connection import ApiConnection
 from constants import API_VERSION, default_header
 from dataproc import create_data_dict
-from objectcreator import AnimeObj, DataObj, EpisodeObj, SongObj, AuthMeObj
+from objectcreator import AnimeObj, DataObj, EpisodeObj, SongObj, UserObj
 from objectcreator import Context as Ctx
 from utils import (InvalidParamsException,
                    ANIME_REQ,
@@ -292,6 +292,10 @@ class AniApi(ApiConnection):
     def get_user_story(self, user_id: int, story_id: int) -> Ctx:
         pass
 
+    # User
+    def get_user(self, user_id: int) -> Ctx:
+        pass
+
     # Auth me.
     def auth_me(self, jwt) -> Ctx:
         """
@@ -316,7 +320,7 @@ class AniApi(ApiConnection):
         if data.get('status_code', 404) != 200:
             return Ctx(**data)
 
-        data['data'] = AuthMeObj(**data.get('data'))
+        data['data'] = UserObj(**data.get('data'))
         return Ctx(**data)
 
 
@@ -329,7 +333,7 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: AuthMeObj = client.auth_me(API_TOKEN).data
+        _data: UserObj = client.auth_me(API_TOKEN).data
         print(_data.has_anilist)
     else:
         f = 20
