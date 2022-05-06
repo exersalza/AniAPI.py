@@ -52,9 +52,66 @@ class ApiConnection(HTTPSConnection):
         The JWT token will be only used for non-read-only requests.
         """
 
-        self.connect()  # Connect and disconnect to prevent the connection from being kept open.
+        # self.connect()  # Connect and disconnect to prevent the connection from being kept open.
 
         self.request('GET', url, headers=headers)
+        r = self.getresponse()
+        res = r.read()
+        header = r.headers
+
+        self.close()
+        return res, header
+
+    def post(self, url: str, headers: dict, data: dict) -> Tuple[bytes, HTTPMessage]:
+        """
+        This will send a `POST` request to aniapi.com
+
+        Parameters
+        ----------
+        url : :class:`str`
+            The url to send the request to.
+
+        headers : :class:`dict`
+            The headers to send with the request. This is for the jwt token and accept thingies.
+
+        data : :class:`dict`
+            The body of the request. This is the data that will be sent to the server.
+
+        Returns
+        -------
+        :class:`bytes`, :class:`HTTPMessage`
+            The read response from the server.
+        """
+
+        self.connect()
+
+        self.request('POST', url, headers=headers, body=data)
+        r = self.getresponse()
+        res = r.read()
+        header = r.headers
+
+        self.close()
+        return res, header
+
+    def delete(self, url: str, headers: dict) -> Tuple[bytes, HTTPMessage]:
+        """
+        This will send a `DELETE` request to aniapi.com
+        Parameters
+        ----------
+        url : :class:`str`
+            The url to send the request to.
+
+        headers : :class:`dict`
+            The headers to send with the request. This is for the jwt token and accept thingies.
+
+        Returns
+        -------
+        :class:`bytes`, :class:`HTTPMessage`
+            The read response from the server. When it responds something.
+        """
+        self.connect()
+
+        self.request('DELETE', url, headers=headers)
         r = self.getresponse()
         res = r.read()
         header = r.headers

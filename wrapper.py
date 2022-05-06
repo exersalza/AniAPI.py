@@ -33,7 +33,7 @@ from utils import (InvalidParamsException,
                    ANIME_REQ,
                    EPISODE_REQ,
                    SONG_REQ,
-                   InvalidParamsValueException)
+                   InvalidParamsValueException, UPDATE_USER_REQ)
 
 
 class AniApi(ApiConnection):
@@ -265,7 +265,7 @@ class AniApi(ApiConnection):
         return Ctx(**data)
 
     # Resource requests
-    def get_resources(self, version: float, type: int) -> Ctx:
+    def get_resources(self, version: float, _type: int) -> Ctx:
         """ Get the resources of the AniApi
 
         Parameters
@@ -273,7 +273,7 @@ class AniApi(ApiConnection):
         version : :class:`float`
             The version from the resource.
 
-        type : :class:`int`
+        _type : :class:`int`
             The type of resource you want to get.
             0 = Anime Genres,
             1 = Locales
@@ -284,20 +284,77 @@ class AniApi(ApiConnection):
             A context object with the query returns and the rate limit information.
         """
 
-        res, header = self.get(f'/{API_VERSION}/resources/{version}/{type}', headers=self.headers)
+        res, header = self.get(f'/{API_VERSION}/resources/{version}/{_type}', headers=self.headers)
         data = create_data_dict(res, header)
         return Ctx(**data)
 
-    # User Storys
+    # User Story's
     def get_user_story(self, user_id: int, story_id: int) -> Ctx:
         pass
 
-    # User
-    def get_user(self, user_id: int) -> Ctx:
-        pass
+    # User related stuff
+    def get_user(self, user_id: int = '', **kwargs) -> Ctx:
+        res, header = self.get(f'/{API_VERSION}/user/1464', headers=self.headers)
+        return Ctx(**create_data_dict(res, header))
+
+    def update_user(self, user_id: int, gender: int, **kwargs) -> Ctx:
+        """ This method will update user information, please read the notes.
+
+        Parameters
+        ----------
+        user_id : [:class:`int`]
+            The unique identifier for the user that you want to edit.
+
+        gender : [:class:`int`]
+            The gender of the user that will be changed or not.
+
+        kwargs
+            Other settings to change on the user's acc, lists can be found at `utils.flags.UPDATE_USER_REQ` or
+            at the docs at: https://aniapi.com/docs/resources/user#parameters-2
+
+        Returns
+        -------
+        :class:`Ctx`
+            A Ctx object with the return object
+
+        Notes
+        -----
+        **It is NOT Recommended that you implement such function or form, when you want to do so, please redirect the
+        User to the website. More information about it on the docs:
+        https://aniapi.com/docs/resource/user#update-an-user**
+        """
+
+        invalid = set(kwargs) - set(UPDATE_USER_REQ)
+
+        if invalid:
+            raise InvalidParamsException(f'Invalid parameters: {invalid}')
+
+        res, header = self.post(f'/{API_VERSION}/user', headers=self.headers, data={'id': user_id,
+                                                                                    'gender': gender,
+                                                                                    **kwargs})
+        data = create_data_dict(res, header)
+
+        return Ctx(**data)
+
+    def delete_user(self, _id: int) -> Ctx:
+        """
+        This method will delete the user with the given id.
+        Parameters
+        ----------
+        _id : [:class:`int`]
+            The unique identifier for the user that you want to delete.
+
+        Returns
+        -------
+        :class:`Ctx`
+            A Ctx object with the return object
+        """
+        res, header = self.delete(f'/{API_VERSION}/user/{_id}', headers=self.headers)
+        data = create_data_dict(res, header)
+        return Ctx(**data)
 
     # Auth me.
-    def auth_me(self, jwt) -> Ctx:
+    def auth_me(self, jwt: str) -> Ctx:
         """
         This method will test the given token and return the user
         information (if it exists and its valid).
@@ -333,8 +390,10 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: UserObj = client.auth_me(API_TOKEN).data
-        print(_data.has_anilist)
+        _data = client.get_anime()
+        time.sleep(600)
+        _data2 = client.get_anime()
+        print(_data, _data2)
     else:
         f = 20
         time_list = ()
