@@ -1,3 +1,25 @@
+#   MIT License
+#  #
+#   Copyright (c) 2022 by exersalza
+#  #
+#   Permission is hereby granted, free of charge, to any person obtaining a copy
+#   of this software and associated documentation files (the "Software"), to deal
+#   in the Software without restriction, including without limitation the rights
+#   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#   copies of the Software, and to permit persons to whom the Software is
+#   furnished to do so, subject to the following conditions:
+#  #
+#   The above copyright notice and this permission notice shall be included in all
+#   copies or substantial portions of the Software.
+#  #
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#   SOFTWARE.
+
 from typing import List, Union, Any, Optional
 
 
@@ -12,30 +34,22 @@ class DataObj:
 
     @property
     def current_page(self) -> int:
-        """
-        Return the current page of Objects, it can be changed by the `page` parameter in the request
-        """
+        """ Return the current page of Objects, it can be changed by the `page` parameter in the request """
         return self.__current_page
 
     @property
     def count(self) -> int:
-        """
-        Return the count of objects inside the current response.
-        """
+        """ Return the count of objects inside the current response. """
         return self.__count
 
     @property
     def documents(self) -> List[object]:
-        """
-        On List requests this will contain the objects given by the Api.
-        """
+        """ On List requests this will contain the objects given by the Api. """
         return self.__documents
 
     @property
     def last_page(self) -> int:
-        """
-        The last page that can be accessed
-        """
+        """ The last page that can be accessed """
         return self.__last_page
 
     def __repr__(self):
@@ -56,29 +70,21 @@ class RateLimit:
 
     @property
     def limit(self) -> str:
-        """
-        The Limit that was setted by the API owner
-        """
+        """ The Limit that was setted by the API owner """
         return self.__limit
 
     @property
     def remaining(self) -> str:
-        """
-        The remaining requests that can be made, will be reset every second
-        """
+        """ The remaining requests that can be made, will be reset every second """
         return self.__remaining
 
     @property
     def reset(self) -> str:
-        """
-        How long until the reset of the remaining requests
-        """
+        """ How long until the reset of the remaining requests """
         return self.__reset
 
     def __repr__(self):
-        """
-        This returns a stripped representation of the object
-        """
+        """ This returns a stripped representation of the object """
         return f'<limit={self.__limit} remaining={self.__remaining} reset={self.__reset}>'
 
 
@@ -96,43 +102,31 @@ class Context:
 
     @property
     def status_code(self) -> int:
-        """
-        The status code of the response, useful for error handling
-        """
+        """ The status code of the response, useful for error handling """
         return self.__status_code
 
     @property
     def message(self) -> str:
-        """
-        The message that is given by the api, often times it will contain useful information
-        """
+        """ The message that is given by the api, often times it will contain useful information """
         return f'{self.__message!r}'
 
     @property
     def data(self) -> Union[Any, List[Any]]:
-        """
-        The data that is given by the api, it can be a list of objects or a single object
-        """
+        """ The data that is given by the api, it can be a list of objects or a single object """
         return self.__data
 
     @property
     def version(self) -> str:
-        """
-        The current version of the api
-        """
+        """ The current version of the api """
         return self.__version
 
     @property
     def ratelimit(self) -> RateLimit:
-        """
-        The ratelimit for the next responses
-        """
+        """ The ratelimit for the next responses """
         return self.__ratelimit
 
     def __repr__(self):
-        """
-        I know it's getting repetitive, but this returns a stripped representation of the object
-        """
+        """ I know it's getting repetitive, but this returns a stripped representation of the object """
         return f'<status_code={self.status_code} message={self.message!r} data={self.data} version={self.version!r}>'
 
 
