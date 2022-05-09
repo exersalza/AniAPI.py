@@ -300,7 +300,7 @@ class AniApi(ApiConnection):
         Parameters
         ----------
         user_id : [:class:`int`]
-            A UserID for specified search of usern.
+            A UserID for specified search of user.
 
         kwargs
             Bring up pagination or currently two arguments for filtering:
