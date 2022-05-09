@@ -20,7 +20,7 @@
 #   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #   SOFTWARE.
 
-from typing import List, Union, Any, Optional
+from typing import List, Union, Any, Optional, Dict
 
 
 class DataObj:
@@ -43,7 +43,7 @@ class DataObj:
         return self.__count
 
     @property
-    def documents(self) -> List[object]:
+    def documents(self) -> list:
         """ On List requests this will contain the objects given by the Api. """
         return self.__documents
 
@@ -54,7 +54,8 @@ class DataObj:
 
     def __repr__(self):
         """ This returns a stripped representation of the object """
-        return f'<current_page={self.current_page} count={self.count} last_page={self.last_page} documents={self.documents}>'
+        return f'<current_page={self.current_page} count={self.count} ' \
+               f'last_page={self.last_page} documents={self.documents}>'
 
 
 class RateLimit:
@@ -208,7 +209,7 @@ class AnimeObj:
         self.__format = kwargs.get('format')
         self.__status = kwargs.get('status')
         self.__titles = kwargs.get('titles')
-        self.__description = kwargs.get('description')
+        self.__descriptions = kwargs.get('descriptions')
         self.__start_date = kwargs.get('start_date')
         self.__end_date = kwargs.get('end_date')
         self.__weakly_airing_day = kwargs.get('weakly_airing_day')
@@ -265,9 +266,9 @@ class AnimeObj:
         return self.__titles
 
     @property
-    def description(self) -> str:
+    def descriptions(self) -> Dict[str, str]:
         """ The description of the anime """
-        return self.__description
+        return self.__descriptions
 
     @property
     def start_date(self) -> str:
@@ -365,7 +366,8 @@ class AnimeObj:
         return self.__recommendations
 
     def __repr__(self) -> str:
-        return f'<id={self.id} title={list(self.__titles.values())[0]!r} nsfw={self.__nsfw}>'
+        return f'<id={self.id} title={list(self.titles.values())[0]!r} ' \
+               f'descriptions={[i for i in self.descriptions.keys()]} nsfw={self.nsfw}>'
 
 
 class SongObj:
@@ -447,25 +449,48 @@ class SongObj:
     def __repr__(self) -> str:
         return f'<id={self.id} title={self.title!r} artist={self.artist!r}>'
 
-
-class UserObj:
+class UserSObj:
     def __init__(self, **kwargs):
-        """ The basic User object representation """
-        self.__username = kwargs.pop('username')
-        self.__email = kwargs.pop('email')
-        self.__email_verified = kwargs.pop('email_verified')
-        self.__role = kwargs.pop('role')
-        self.__gender = kwargs.pop('gender')
-        self.__avatar_tracker = kwargs.pop('avatar_tracker')
-        self.__localization = kwargs.pop('localization')
-        self.__has_anilist = kwargs.pop('has_anilist')
-        self.__has_mal = kwargs.pop('has_mal')
-        self.__id = kwargs.pop('id')
+        self.__username = kwargs.get('username')
+        self.__role = kwargs.get('role')
+        self.__gender = kwargs.get('gender')
+        self.__id = kwargs.get('id')
 
     @property
     def username(self) -> str:
         """ The username of the user """
         return self.__username
+
+    @property
+    def role(self) -> int:
+        """ The role of the user, usually its 0 but for mods or admins its 1 and 2"""
+        return self.__role
+
+    @property
+    def gender(self) -> int:
+        """ The gender, 0: Not given, 1: Male, 2: Female """
+        return self.__gender
+
+    @property
+    def id(self) -> int:
+        """ The unique identifier of the user on AniApi.com """
+        return self.__id
+
+    def __repr__(self) -> str:
+        return f'<username={self.username} role={self.role} id={self.id} gender={self.gender}>'
+
+
+class UserBObj(UserSObj):
+    def __init__(self, **kwargs):
+        """ The basic User object representation """
+        super().__init__(**kwargs)
+
+        self.__email = kwargs.get('email')
+        self.__email_verified = kwargs.get('email_verified')
+        self.__avatar_tracker = kwargs.get('avatar_tracker')
+        self.__localization = kwargs.get('localization')
+        self.__has_anilist = kwargs.get('has_anilist')
+        self.__has_mal = kwargs.get('has_mal')
 
     @property
     def email(self) -> str:
@@ -476,16 +501,6 @@ class UserObj:
     def email_verified(self) -> bool:
         """ |CONFIDENTIAL| Whether the email is verified or not """
         return self.__email_verified
-
-    @property
-    def role(self) -> str:
-        """ The role of the user, 0: User, 1: Moderator, 2: Administrator """
-        return self.__role
-
-    @property
-    def gender(self) -> int:
-        """ The gender of the user, 0: Unknown, 1: Male, 2: Female """
-        return self.__gender
 
     @property
     def avatar_tracker(self) -> Optional[str]:
@@ -506,11 +521,6 @@ class UserObj:
     def has_mal(self) -> Optional[bool]:
         """ Whether the user has MyAnimeList or not """
         return self.__has_mal
-
-    @property
-    def id(self) -> int:
-        """ The id of the user """
-        return self.__id
 
     def __repr__(self) -> str:
         return f'<id={self.id} username={self.username!r} email_verified={self.email_verified}>'

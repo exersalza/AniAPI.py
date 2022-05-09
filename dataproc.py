@@ -22,7 +22,7 @@
 
 import json
 
-from objectcreator import RateLimit
+from objects import RateLimit
 
 
 def get_ratelimit(res: dict) -> RateLimit:

@@ -52,6 +52,9 @@ SONG_REQ = ['anime_id',
             'season',
             'type'] + PAGINATION
 
+USER_REQ = ['username',
+            'email'] + PAGINATION
+
 UPDATE_USER_REQ = ['password',
                    'localization',
                    'anilist_id',

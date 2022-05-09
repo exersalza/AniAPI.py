@@ -27,13 +27,13 @@ from urllib.parse import urlencode
 from connection import ApiConnection
 from constants import API_VERSION, default_header
 from dataproc import create_data_dict
-from objectcreator import AnimeObj, DataObj, EpisodeObj, SongObj, UserObj
-from objectcreator import Context as Ctx
+from objects import AnimeObj, DataObj, EpisodeObj, SongObj, UserSObj, UserBObj
+from objects import Context as Ctx
 from utils import (InvalidParamsException,
                    ANIME_REQ,
                    EPISODE_REQ,
                    SONG_REQ,
-                   InvalidParamsValueException, UPDATE_USER_REQ)
+                   InvalidParamsValueException, UPDATE_USER_REQ, USER_REQ)
 
 
 class AniApi(ApiConnection):
@@ -116,7 +116,7 @@ class AniApi(ApiConnection):
 
         Returns
         -------
-        Context
+        :class:`Ctx`
             A Context object with the query returns and the rate limit information.
 
         Raises
@@ -294,8 +294,31 @@ class AniApi(ApiConnection):
 
     # User related stuff
     def get_user(self, user_id: int = '', **kwargs) -> Ctx:
-        res, header = self.get(f'/{API_VERSION}/user/1464', headers=self.headers)
-        return Ctx(**create_data_dict(res, header))
+        """
+        Get user list of users or when you provide a user_id to get a specific user
+
+        Parameters
+        ----------
+        user_id : [:class:`int`]
+            A UserID for specified search of usern.
+
+        kwargs
+            Bring up pagination or currently two arguments for filtering:
+            username: is not case-sensitive, it searches for substrings in the username.
+            email: it's the same as username.
+
+        Returns
+        -------
+        :class:`ctx`
+            Context object with the query results
+        """
+        invalid = set(kwargs) - set(USER_REQ)
+
+        if invalid:
+            raise InvalidParamsValueException(f'Invalid parameters: {invalid}')
+
+        data = self.get_requests(user_id, 'user', kwargs, UserSObj)
+        return Ctx(**data)
 
     def update_user(self, user_id: int, gender: int, **kwargs) -> Ctx:
         """ This method will update user information, please read the notes.
@@ -377,7 +400,7 @@ class AniApi(ApiConnection):
         if data.get('status_code', 404) != 200:
             return Ctx(**data)
 
-        data['data'] = UserObj(**data.get('data'))
+        data['data'] = UserBObj(**data.get('data'))
         return Ctx(**data)
 
 
@@ -390,10 +413,9 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data = client.get_anime()
-        time.sleep(600)
-        _data2 = client.get_anime()
-        print(_data, _data2)
+        _data = client.get_user()
+
+        print(_data)
     else:
         f = 20
         time_list = ()
