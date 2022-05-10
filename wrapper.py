@@ -292,6 +292,43 @@ class AniApi(ApiConnection):
     def get_user_story(self, user_id: int, story_id: int) -> Ctx:
         pass
 
+    def update_user_story(self, story_id: int, user_id: int, anime_id: int, status: int, ce: int, cet: int) -> Ctx:
+        """
+        Update a UserStory
+
+        Parameters
+        ----------
+        story_id : [:class:`int`]
+            -> id, on the docs.
+            The UserStory's unique identifier.
+
+        user_id : [:class:`int`]
+            -> user_id, on the docs.
+            The userid that is related to the UserStory.
+
+        anime_id : [:class:`int`]
+            -> anime_id, on the docs
+            The UserStory's anime id.
+
+        status : [:class:`int`]
+            -> status, on the docs
+            The watching status of the UserStory.
+
+        ce : [:class:`int`]
+            -> current_episode, on the docs
+            The current watching progress on the UserStory, note: the watching progress must be less or equal to the
+            anime's `episode_count`.
+
+        cet : [:class:`int`]
+            -> current_episode_ticks, on the docs
+            The UserStory's `current_episode` watching time in milliseconds.
+
+        Returns
+        -------
+        :class:`Ctx`
+            A response from the API to prove if it works or not.
+        """
+
     # User related stuff
     def get_user(self, user_id: int = '', **kwargs) -> Ctx:
         """
@@ -404,31 +441,3 @@ class AniApi(ApiConnection):
 
         data['data'] = UserBObj(**data.get('data'))
         return Ctx(**data)
-
-
-if __name__ == '__main__':
-    from config import API_TOKEN
-
-    test = False
-    start = time.time()
-
-    client = AniApi(token=API_TOKEN)
-
-    if not test:
-        _data = client.get_user()
-
-        print(_data)
-    else:
-        f = 20
-        time_list = ()
-
-        for f in range(f):  # FOR PERFORMANCE TESTING
-            start_time = time.time()
-            _data = client.get_resources(1.0, 1)
-            time_list += (time.time() - start_time,)
-
-        print(f'{sum(time_list) / f:.3f}s')
-
-    end = time.time()
-
-    print(f'Time: {(end - start):.3f}s')
