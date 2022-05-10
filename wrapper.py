@@ -304,6 +304,7 @@ class AniApi(ApiConnection):
 
         kwargs
             Bring up pagination or currently two arguments for filtering:
+
             username: is not case-sensitive, it searches for substrings in the username.
             email: it's the same as username.
 
@@ -312,6 +313,7 @@ class AniApi(ApiConnection):
         :class:`ctx`
             Context object with the query results
         """
+
         invalid = set(kwargs) - set(USER_REQ)
 
         if invalid:

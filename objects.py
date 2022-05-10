@@ -99,7 +99,7 @@ class Context:
         self.__message = kwargs.get('message', 'Not Found')
         self.__data = kwargs.get('data', {})
         self.__version = kwargs.get('version', '1')
-        self.__ratelimit = kwargs.get('ratelimit', None)
+        self.__ratelimit = kwargs.get('ratelimit')
 
     @property
     def status_code(self) -> int:
