@@ -59,3 +59,8 @@ UPDATE_USER_REQ = ['password',
                    'localization',
                    'anilist_id',
                    'anilist_token']
+
+USER_STORY_REQ = ['anime_id',
+                  'user_id',
+                  'status',
+                  'synced']

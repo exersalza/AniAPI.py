@@ -11,7 +11,7 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data = client.get_user()
+        _data = client.get_user_story()
 
         print(_data)
     else:

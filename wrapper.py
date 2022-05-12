@@ -22,6 +22,7 @@
 #  SOFTWARE.
 
 import time
+from http.client import HTTPMessage
 from urllib.parse import urlencode
 
 from connection import ApiConnection
@@ -33,7 +34,7 @@ from utils import (InvalidParamsException,
                    ANIME_REQ,
                    EPISODE_REQ,
                    SONG_REQ,
-                   InvalidParamsValueException, UPDATE_USER_REQ, USER_REQ)
+                   InvalidParamsValueException, UPDATE_USER_REQ, USER_REQ, USER_STORY_REQ)
 
 
 class AniApi(ApiConnection):
@@ -289,21 +290,35 @@ class AniApi(ApiConnection):
         return Ctx(**data)
 
     # User Story's
-    def get_user_story(self, user_id: int, story_id: int) -> Ctx:
-        """
+    def get_user_story(self, story_id: int = '', **kwargs) -> Ctx:
+        """ Get a list or specific UserStory from the API
 
         Parameters
         ----------
-        user_id
-        story_id
+        story_id : [:class:`int`]
+            The UserStory id to get, note: when you provide an id.
+
+        kwargs
+            Include filter for the List request
 
         Returns
         -------
+        :class:`Ctx`
+            Ctx object with the response from the get request
 
         """
-        pass
 
-    def create_user_story(self):
+        invalid = set(kwargs) - set(USER_STORY_REQ)
+
+        if invalid:
+            raise InvalidParamsException(f'Invalid arguments: {invalid}')
+
+        res, header = self.get(f'/{API_VERSION}/user_story/{story_id}?{urlencode(kwargs)}', self.headers)
+        data = create_data_dict(res, header)
+        return Ctx(**data)
+
+    def create_user_story(self, user_id: int, anime_id: int, status: int, **kwargs) -> Ctx:
+
         pass
 
     def update_user_story(self, story_id: int, user_id: int, anime_id: int, status: int, ce: int, cet: int) -> Ctx:
@@ -370,8 +385,10 @@ class AniApi(ApiConnection):
         You should only use the endpoint when the User has 0 linked trackers, otherwise it will get re-imported.
 
         """
+
         res, header = self.delete(url=f'/{API_VERSION}/user_story', headers=self.headers)
         data = create_data_dict(res, header)
+
         return Ctx(**data)
 
     # User related stuff
@@ -399,7 +416,7 @@ class AniApi(ApiConnection):
         invalid = set(kwargs) - set(USER_REQ)
 
         if invalid:
-            raise InvalidParamsValueException(f'Invalid parameters: {invalid}')
+            raise InvalidParamsException(f'Invalid parameters: {invalid}')
 
         data = self.get_requests(user_id, 'user', kwargs, UserSObj)
         return Ctx(**data)
@@ -456,6 +473,7 @@ class AniApi(ApiConnection):
         :class:`Ctx`
             A Ctx object with the return object
         """
+
         res, header = self.delete(f'/{API_VERSION}/user/{_id}', headers=self.headers)
         data = create_data_dict(res, header)
         return Ctx(**data)

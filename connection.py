@@ -84,6 +84,37 @@ class ApiConnection(HTTPSConnection):
 
         return res, header
 
+    def __requests_body(self, method: str, data: dict, headers: dict, url: str) -> Tuple[bytes, HTTPMessage]:
+        """ the same as the __request method but for PUT and POST req
+
+        Parameters
+        ----------
+        method : :class:`str`
+            The method that you want to use, possible values POST or PUT.
+
+        data : :class:`dict`
+            The body that will be delivered with the request.
+
+        headers : :class:`dict`
+            The default headers for authorization.
+
+        url : :class:`str`
+            The endpoints url to send the request to.
+
+        Returns
+        -------
+        :class:`bytes` and :class:`HTTPMessage`
+            The response that the api gives us back.
+        """
+
+        self.request(method, url, headers=headers, body=data)
+
+        rdata = self.getresponse()
+        res = rdata.read()
+        header = rdata.headers
+
+        return res, header
+
     def post(self, url: str, headers: dict, data: dict) -> Tuple[bytes, HTTPMessage]:
         """
         This will send a `POST` request to aniapi.com
@@ -105,10 +136,7 @@ class ApiConnection(HTTPSConnection):
             The read response from the server.
         """
 
-        self.request('POST', url, headers=headers, body=data)
-        rdata = self.getresponse()
-        res = rdata.read()
-        header = rdata.headers
+        res, header = self.__requests_body('POST', data=data, headers=headers, url=url)
 
         self.close()
         return res, header
@@ -116,6 +144,7 @@ class ApiConnection(HTTPSConnection):
     def delete(self, url: str, headers: dict) -> Tuple[bytes, HTTPMessage]:
         """
         This will send a `DELETE` request to aniapi.com
+
         Parameters
         ----------
         url : :class:`str`
@@ -130,7 +159,31 @@ class ApiConnection(HTTPSConnection):
             The read response from the server. When it responds something.
         """
 
-        res, header = self.__request('DELETE', url, headers)
+        res, header = self.__request('DELETE', url=url, headers=headers)
+
+        self.close()
+        return res, header
+
+    def put(self, url: str, headers: dict, data: dict) -> Tuple[bytes, HTTPMessage]:
+        """ Here you can create entries on the api
+
+        Parameters
+        ----------
+        url : [:class:`str`]
+            The endpoints url to access.
+
+        headers : [:class:`dict`]
+            The default headers.
+
+        data : [:class:`dict`]
+            The data for the creation.
+
+        Returns
+        -------
+        :class:`bytes` and :class:`HTTPMessage`
+            The response from the endpoint.
+        """
+        res, header = self.__requests_body('PUT', data=data, url=url, headers=headers)
 
         self.close()
         return res, header
