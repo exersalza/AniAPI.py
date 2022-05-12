@@ -26,11 +26,11 @@ from typing import List, Union, Any, Optional, Dict
 class DataObj:
     """ This class converts the Dict output to an DataObj """
 
-    def __init__(self, **kwargs):
-        self.__current_page = kwargs.get('current_page')
-        self.__count = kwargs.get('count')
-        self.__documents = kwargs.get('documents')
-        self.__last_page = kwargs.get('last_page')
+    def __init__(self, **kwa):
+        self.__current_page = kwa.get('current_page')
+        self.__count = kwa.get('count')
+        self.__documents = kwa.get('documents')
+        self.__last_page = kwa.get('last_page')
 
     @property
     def current_page(self) -> int:
@@ -90,16 +90,16 @@ class RateLimit:
 
 
 class Context:
-    def __init__(self, **kwargs):  # Create a Non-changeable object
+    def __init__(self, **kwa):  # Create a Non-changeable object
         """
         This is the Basic Context Object for the response
         """
 
-        self.__status_code = kwargs.get('status_code', 404)
-        self.__message = kwargs.get('message', 'Not Found')
-        self.__data = kwargs.get('data', {})
-        self.__version = kwargs.get('version', '1')
-        self.__ratelimit = kwargs.get('ratelimit')
+        self.__status_code = kwa.get('status_code', 404)
+        self.__message = kwa.get('message', 'Not Found')
+        self.__data = kwa.get('data', {})
+        self.__version = kwa.get('version', '1')
+        self.__ratelimit = kwa.get('ratelimit')
 
     @property
     def status_code(self) -> int:
@@ -132,18 +132,18 @@ class Context:
 
 
 class EpisodeObj:
-    def __init__(self, **kwargs):
+    def __init__(self, **kwa):
         """ This class represents the Episode Object """
-        self.__id = kwargs.get('id')
-        self.__anime_id = kwargs.get('anime_id')
-        self.__number = kwargs.get('number')
-        self.__title = kwargs.get('title')
-        self.__video = kwargs.get('video')
-        self.__video_headers = kwargs.get('video_headers')
-        self.__locale = kwargs.get('locale')
-        self.__quality = kwargs.get('quality')
-        self.__format = kwargs.get('format')
-        self.__is_dub = kwargs.get('is_dub')
+        self.__id = kwa.get('id')
+        self.__anime_id = kwa.get('anime_id')
+        self.__number = kwa.get('number')
+        self.__title = kwa.get('title')
+        self.__video = kwa.get('video')
+        self.__video_headers = kwa.get('video_headers')
+        self.__locale = kwa.get('locale')
+        self.__quality = kwa.get('quality')
+        self.__format = kwa.get('format')
+        self.__is_dub = kwa.get('is_dub')
 
     @property
     def id(self) -> int:
@@ -200,35 +200,35 @@ class EpisodeObj:
 
 
 class AnimeObj:
-    def __init__(self, **kwargs):
+    def __init__(self, **kwa):
         """ This class represents the Anime Object """
-        self.__id = kwargs.get('id')
-        self.__anilist_id = kwargs.get('anilist_id')
-        self.__mal_id = kwargs.get('mal_id')
-        self.__tmdb_id = kwargs.get('tmdb_id')
-        self.__format = kwargs.get('format')
-        self.__status = kwargs.get('status')
-        self.__titles = kwargs.get('titles')
-        self.__descriptions = kwargs.get('descriptions')
-        self.__start_date = kwargs.get('start_date')
-        self.__end_date = kwargs.get('end_date')
-        self.__weakly_airing_day = kwargs.get('weakly_airing_day')
-        self.__season_period = kwargs.get('season_period')
-        self.__season_year = kwargs.get('season_year')
-        self.__episodes_count = kwargs.get('episodes_count')
-        self.__episodes_duration = kwargs.get('episodes_duration')
-        self.__trailer_url = kwargs.get('trailer_url')
-        self.__cover_image = kwargs.get('cover_image')
-        self.__has_cover_image = kwargs.get('has_cover_image')
-        self.__cover_color = kwargs.get('cover_color')
-        self.__banner_image = kwargs.get('banner_image')
-        self.__genres = kwargs.get('genres')
-        self.__sagas = kwargs.get('sagas')
-        self.__sequel = kwargs.get('sequel')
-        self.__prequel = kwargs.get('prequel')
-        self.__score = kwargs.get('score')
-        self.__nsfw = kwargs.get('nsfw')
-        self.__recommendations = kwargs.get('recommendations')
+        self.__id = kwa.get('id')
+        self.__anilist_id = kwa.get('anilist_id')
+        self.__mal_id = kwa.get('mal_id')
+        self.__tmdb_id = kwa.get('tmdb_id')
+        self.__format = kwa.get('format')
+        self.__status = kwa.get('status')
+        self.__titles = kwa.get('titles')
+        self.__descriptions = kwa.get('descriptions')
+        self.__start_date = kwa.get('start_date')
+        self.__end_date = kwa.get('end_date')
+        self.__weakly_airing_day = kwa.get('weakly_airing_day')
+        self.__season_period = kwa.get('season_period')
+        self.__season_year = kwa.get('season_year')
+        self.__episodes_count = kwa.get('episodes_count')
+        self.__episodes_duration = kwa.get('episodes_duration')
+        self.__trailer_url = kwa.get('trailer_url')
+        self.__cover_image = kwa.get('cover_image')
+        self.__has_cover_image = kwa.get('has_cover_image')
+        self.__cover_color = kwa.get('cover_color')
+        self.__banner_image = kwa.get('banner_image')
+        self.__genres = kwa.get('genres')
+        self.__sagas = kwa.get('sagas')
+        self.__sequel = kwa.get('sequel')
+        self.__prequel = kwa.get('prequel')
+        self.__score = kwa.get('score')
+        self.__nsfw = kwa.get('nsfw')
+        self.__recommendations = kwa.get('recommendations')
 
     @property
     def id(self) -> int:
@@ -371,20 +371,20 @@ class AnimeObj:
 
 
 class SongObj:
-    def __init__(self, **kwargs):
+    def __init__(self, **kwa):
         """  The song object """
-        self.__id = kwargs.get('id')
-        self.__anime_id = kwargs.get('anime_id')
-        self.__title = kwargs.get('title')
-        self.__artist = kwargs.get('artist')
-        self.__album = kwargs.get('album')
-        self.__year = kwargs.get('year')
-        self.__season = kwargs.get('season')
-        self.__duration = kwargs.get('duration')
-        self.__preview_url = kwargs.get('preview_url')
-        self.__open_spotify_url = kwargs.get('open_spotify_url')
-        self.__local_spotify_url = kwargs.get('local_spotify_url')
-        self.__type = kwargs.get('type')
+        self.__id = kwa.get('id')
+        self.__anime_id = kwa.get('anime_id')
+        self.__title = kwa.get('title')
+        self.__artist = kwa.get('artist')
+        self.__album = kwa.get('album')
+        self.__year = kwa.get('year')
+        self.__season = kwa.get('season')
+        self.__duration = kwa.get('duration')
+        self.__preview_url = kwa.get('preview_url')
+        self.__open_spotify_url = kwa.get('open_spotify_url')
+        self.__local_spotify_url = kwa.get('local_spotify_url')
+        self.__type = kwa.get('type')
 
     @property
     def id(self) -> int:
@@ -449,12 +449,13 @@ class SongObj:
     def __repr__(self) -> str:
         return f'<id={self.id} title={self.title!r} artist={self.artist!r}>'
 
+
 class UserSObj:
-    def __init__(self, **kwargs):
-        self.__username = kwargs.get('username')
-        self.__role = kwargs.get('role')
-        self.__gender = kwargs.get('gender')
-        self.__id = kwargs.get('id')
+    def __init__(self, **kwa):
+        self.__username = kwa.get('username')
+        self.__role = kwa.get('role')
+        self.__gender = kwa.get('gender')
+        self.__id = kwa.get('id')
 
     @property
     def username(self) -> str:
@@ -481,16 +482,16 @@ class UserSObj:
 
 
 class UserBObj(UserSObj):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwa):
         """ The basic User object representation """
-        super().__init__(**kwargs)
+        super().__init__(**kwa)
 
-        self.__email = kwargs.get('email')
-        self.__email_verified = kwargs.get('email_verified')
-        self.__avatar_tracker = kwargs.get('avatar_tracker')
-        self.__localization = kwargs.get('localization')
-        self.__has_anilist = kwargs.get('has_anilist')
-        self.__has_mal = kwargs.get('has_mal')
+        self.__email = kwa.get('email')
+        self.__email_verified = kwa.get('email_verified')
+        self.__avatar_tracker = kwa.get('avatar_tracker')
+        self.__localization = kwa.get('localization')
+        self.__has_anilist = kwa.get('has_anilist')
+        self.__has_mal = kwa.get('has_mal')
 
     @property
     def email(self) -> str:
@@ -524,3 +525,47 @@ class UserBObj(UserSObj):
 
     def __repr__(self) -> str:
         return f'<id={self.id} username={self.username!r} email_verified={self.email_verified}>'
+
+
+class UserStoryObj:
+    """ This class represents the UserStory's object """
+    def __init__(self, **kwa):
+        self.__id = kwa.get('id')
+        self.__user_id = kwa.get('user_id')
+        self.__anime_id = kwa.get('anime_id')
+        self.__status = kwa.get('status')
+        self.__current_episodes = kwa.get('current_episodes')
+        self.__current_episode_ticks = kwa.get('current_episode_ticks')
+
+    @property
+    def _id(self) -> int:
+        """ The id of the UserStory """
+        return self.__id
+
+    @property
+    def user_id(self) -> int:
+        """ The user that belongs the UserStory to """
+        return self.__user_id
+
+    @property
+    def anime_id(self) -> str:
+        """ The anime_id from the story """
+        return self.__anime_id
+
+    @property
+    def status(self) -> int:
+        """ The watching status """
+        return self.__status
+
+    @property
+    def current_episode(self) -> int:
+        """ Current episode watching progress """
+        return self.__current_episodes
+
+    @property
+    def current_episode_ticks(self) -> int:
+        """ The UserStory's `current_episode` watching time in milliseconds """
+        return self.__current_episode_ticks
+
+    def __repr__(self):
+        return f'<id={self._id} user_id={self.user_id} status={self.status}>'

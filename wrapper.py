@@ -290,6 +290,20 @@ class AniApi(ApiConnection):
 
     # User Story's
     def get_user_story(self, user_id: int, story_id: int) -> Ctx:
+        """
+
+        Parameters
+        ----------
+        user_id
+        story_id
+
+        Returns
+        -------
+
+        """
+        pass
+
+    def create_user_story(self):
         pass
 
     def update_user_story(self, story_id: int, user_id: int, anime_id: int, status: int, ce: int, cet: int) -> Ctx:
@@ -328,6 +342,37 @@ class AniApi(ApiConnection):
         :class:`Ctx`
             A response from the API to prove if it works or not.
         """
+
+        udata = {'id': story_id, 'user_id': user_id, 'anime_id': anime_id,
+                 'status': status, 'current_episode': ce, 'current_episode_ticks': cet}
+
+        res, header = self.post(url=f'/{API_VERSION}/user_story', headers=self.headers, data=udata)
+        data = create_data_dict(res, header)
+
+        return Ctx(**data)
+
+    def delete_user_story(self, _id: int) -> Ctx:
+        """
+        Deletes a UserStory on the provided unique identifier.
+
+        Parameters
+        ----------
+        _id : [:class:`int`]
+            The id from the UserStory that wanted to be deleted.
+
+        Returns
+        -------
+        :class:`Ctx`
+            Context obj with the response inside it
+
+        Notes
+        -----
+        You should only use the endpoint when the User has 0 linked trackers, otherwise it will get re-imported.
+
+        """
+        res, header = self.delete(url=f'/{API_VERSION}/user_story', headers=self.headers)
+        data = create_data_dict(res, header)
+        return Ctx(**data)
 
     # User related stuff
     def get_user(self, user_id: int = '', **kwargs) -> Ctx:

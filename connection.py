@@ -54,12 +54,34 @@ class ApiConnection(HTTPSConnection):
 
         # self.connect()  # Connect and disconnect to prevent the connection from being kept open.
 
-        self.request('GET', url, headers=headers)
-        r = self.getresponse()
-        res = r.read()
-        header = r.headers
+        res, header = self.__request('GET', headers, url)
 
         self.close()
+        return res, header
+
+    def __request(self, method: str, headers: dict, url: str) -> Tuple[bytes, HTTPMessage]:
+        """ This is just for preventing repetitive code samples
+        Parameters
+        ----------
+        method : [:class:`str`]
+            The request method that is needed, e.x. POST or GET.
+
+        headers : [:class:`dict`]
+            The default header for the authorization.
+
+        url : [:class:`str`]
+            The url to send the request to.
+
+        Returns
+        -------
+
+        """
+        self.request(method, url, headers=headers)
+
+        data = self.getresponse()
+        res = data.read()
+        header = data.headers
+
         return res, header
 
     def post(self, url: str, headers: dict, data: dict) -> Tuple[bytes, HTTPMessage]:
@@ -83,12 +105,10 @@ class ApiConnection(HTTPSConnection):
             The read response from the server.
         """
 
-        self.connect()
-
         self.request('POST', url, headers=headers, body=data)
-        r = self.getresponse()
-        res = r.read()
-        header = r.headers
+        rdata = self.getresponse()
+        res = rdata.read()
+        header = rdata.headers
 
         self.close()
         return res, header
@@ -109,12 +129,8 @@ class ApiConnection(HTTPSConnection):
         :class:`bytes`, :class:`HTTPMessage`
             The read response from the server. When it responds something.
         """
-        self.connect()
 
-        self.request('DELETE', url, headers=headers)
-        r = self.getresponse()
-        res = r.read()
-        header = r.headers
+        res, header = self.__request('DELETE', url, headers)
 
         self.close()
         return res, header

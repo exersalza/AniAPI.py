@@ -62,3 +62,12 @@ class SongTypes(IntEnum):
     OPENING = 0
     ENDING = 1
     NONE = 2
+
+
+class UserStoryStatus(IntEnum):
+    CURRENT = 0
+    PLANNING = 1
+    COMPLETED = 2
+    DROPPED = 3
+    PAUSED = 4
+    REPEATING = 5
