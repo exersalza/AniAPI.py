@@ -1,5 +1,7 @@
 import time
 
+from constants import API_VERSION
+from objects import UserBObj
 from wrapper import AniApi
 from config import API_TOKEN
 
@@ -11,9 +13,9 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data = client.get_user_story()
+        _data: UserBObj = client.auth_me(API_TOKEN).data
 
-        print(_data)
+        print(_data.has_mal)
     else:
         f = 20
         time_list = ()

@@ -318,8 +318,19 @@ class AniApi(ApiConnection):
         return Ctx(**data)
 
     def create_user_story(self, user_id: int, anime_id: int, status: int, **kwargs) -> Ctx:
+        invalid = set(kwargs) - {'current_episode',
+                                 'current_episode_ticks'}
 
-        pass
+        if invalid:
+            raise InvalidParamsException(f'Invalid parameters given: {invalid}')
+
+        udata = {'user_id': user_id, 'anime_id': anime_id, 'status': status}
+        udata.update(kwargs)
+
+        res, header = self.post(url=f'/{API_VERSION}/user_story/', headers=self.headers, data=udata)
+        data = create_data_dict(res, header)
+
+        return Ctx(**data)
 
     def update_user_story(self, story_id: int, user_id: int, anime_id: int, status: int, ce: int, cet: int) -> Ctx:
         """
@@ -386,7 +397,7 @@ class AniApi(ApiConnection):
 
         """
 
-        res, header = self.delete(url=f'/{API_VERSION}/user_story', headers=self.headers)
+        res, header = self.delete(url=f'/{API_VERSION}/user_story/{_id}', headers=self.headers)
         data = create_data_dict(res, header)
 
         return Ctx(**data)
