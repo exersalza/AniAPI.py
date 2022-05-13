@@ -222,17 +222,42 @@ class AnimeObj:
 
 @dataclass(frozen=True)
 class SongObj:
+    """ This represents the song obj """
+
+    # The id of the song
     id: int
+
+    # The anime id that is related to the song
     anime_id: str
+
+    # The title of the song
     title: str
+
+    # The artist of the song
     artist: str
+
+    # The album from the song
     album: str
+
+    # The release year
     year: int
+
+    # The songs release season
     season: int
+
+    # The duration in milliseconds
     duration: int
+
+    # The songs spotify preview url, which provides ~30 soconds of the song
     preview_url: str
+
+    # The link to spotify
     open_spotify_link: str
+
+    # The local spotify url, it will open the spotify app automatically when opened
     local_spotify_url: str
+
+    # The songs type
     type: int
 
     def __repr__(self) -> str:
@@ -241,9 +266,18 @@ class SongObj:
 
 @dataclass(frozen=True)
 class UserSObj:
+    """ This is the small variant of the user obj """
+
+    # The user id
     id: int
+
+    # The username
     username: str
+
+    # The role, current 0: User, 1: Mod, 2: Admin
     role: int
+
+    # The gender that the user has
     gender: int
 
     def __repr__(self) -> str:
@@ -252,10 +286,24 @@ class UserSObj:
 
 @dataclass(frozen=True)
 class UserBObj(UserSObj):
+    """ The Bigger user object
+
+    Meaning of: |CONFIDENTIAL| = This data can be only accessed with a JWT token.
+    """
+
+    # |CONFIDENTIAL| The email from the user
     email: str
+
+    # |CONFIDENTIAL| Has the user their email verified?
     email_verified: bool
+
+    # From which link comes the avatar
     avatar_tracker: str
+
+    # The Localization from the user
     localization: str
+
+    # Has it a link?
     has_anilist: Optional[bool]
     has_mal: Optional[bool]
 
@@ -266,11 +314,23 @@ class UserBObj(UserSObj):
 @dataclass(frozen=True)
 class UserStoryObj:
     """ This class represents the UserStory's object """
+
+    # The id of the UserStory
     id: int
+
+    # The user id that is binded to the UserStory
     user_id: int
+
+    # The anime id that belongs to the Story
     anime_id: str
+
+    # The watching status
     status: int
+
+    # The current episode watching progress
     current_episode: int
+
+    # The current episode watching progress in milliseconds
     current_episode_ticks: int
 
     def __repr__(self):
