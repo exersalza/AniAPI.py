@@ -116,14 +116,14 @@ class EpisodeObj:
     # The episode's website related locale.
     locale: str
 
-    # The quality of the episode.
-    quality: Optional[int]
-
     # The format of the video.
     format: str
 
     # Is this episode dubbed?
     is_dub: bool
+
+    # The quality of the episode.
+    quality: Optional[int] = None
 
     def __repr__(self):
         return f'<id={self.id} anime_id={self.anime_id} number={self.number} locale={self.locale}>'
@@ -211,7 +211,7 @@ class AnimeObj:
 
     # The season that the shows has been released
     season_period: Optional[int] = None
-    
+
     # The release year
     season_year: Optional[int] = None
 
@@ -304,8 +304,8 @@ class UserBObj(UserSObj):
     localization: str
 
     # Has it a link?
-    has_anilist: Optional[bool]
-    has_mal: Optional[bool]
+    has_anilist: Optional[bool] = None
+    has_mal: Optional[bool] = None
 
     def __repr__(self) -> str:
         return f'<id={self.id} username={self.username!r} email_verified={self.email_verified} role={self.role}>'
