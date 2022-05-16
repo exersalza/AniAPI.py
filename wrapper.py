@@ -318,6 +318,33 @@ class AniApi(ApiConnection):
         return Ctx(**data)
 
     def create_user_story(self, user_id: int, anime_id: int, status: int, **kwargs) -> Ctx:
+        """ This will create a UserStory based on the given parameters.
+
+        Parameters
+        ----------
+        user_id : :class:`int`
+            The User ID for the UserStory's bind.
+
+        anime_id : :class:`int`
+            The UserStory's Anime ID.
+
+        status : :class:`int`
+            The UserStory's watching status.
+
+        kwargs : Optional
+            These are the optional parameters.
+
+            current_episode (int) -> The current watching progress. It must be less than
+            the Anime's episode_count value, when you provide a status equal to 1 or 2 this field is auto-calculated.
+
+            current_episode_ticks (int) -> The current episode watching time in milliseconds.
+
+        Returns
+        -------
+        :class:`Ctx`
+            The response as Ctx object
+        """
+        
         invalid = set(kwargs) - {'current_episode',
                                  'current_episode_ticks'}
 
