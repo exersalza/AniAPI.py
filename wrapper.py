@@ -21,26 +21,25 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-import time
 from urllib.parse import urlencode
 
 from connection import ApiConnection
-from constants import API_VERSION, DEFAULT_HEADER
+from constants import API_VERSION, default_header
 from dataproc import create_data_dict
-from objectcreator import AnimeObj, DataObj, EpisodeObj, SongObj, AuthMeObj
-from objectcreator import Context as Ctx
+from objects import AnimeObj, DataObj, EpisodeObj, SongObj, UserSObj, UserBObj
+from objects import Context as Ctx
 from utils import (InvalidParamsException,
                    ANIME_REQ,
                    EPISODE_REQ,
                    SONG_REQ,
-                   InvalidParamsValueException)
+                   InvalidParamsValueException, UPDATE_USER_REQ, USER_REQ, USER_STORY_REQ)
 
 
 class AniApi(ApiConnection):
     def __init__(self, token: str = ''):
         """ This is the Base Class for the AniApi wrapper.
-        This clas will only contain the Anime and Song requests,
-        and will be extended by the other classes.
+        This class will only contain the resources given at the docs,
+        oauth will be extended by the other classes.
 
         In this class you will find other than the standard requests the `auth me` requests,
         when you want them oAuth stuff please use the :class:`AniApiOAuth` class,
@@ -50,8 +49,7 @@ class AniApi(ApiConnection):
         -----------
         token : [:class:`str`]
             The API Token you get from https://aniapi.com/profile.
-            You will only need this token when you want to use things
-            from outer scope than the `GET` methods.
+            If your application is inside the read-only scope then you don't need to provide a token.
 
         timeout : [:class:`int`]
             The timeout for the connection.
@@ -60,7 +58,7 @@ class AniApi(ApiConnection):
         super().__init__()
 
         # Define default headers with token
-        self.headers = DEFAULT_HEADER(token)
+        self.headers = default_header(token)
 
     def get_requests(self, _id, url, params, obj) -> dict:
         """ For development method. this method will be used later to make it easier
@@ -117,7 +115,7 @@ class AniApi(ApiConnection):
 
         Returns
         -------
-        Context
+        :class:`Ctx`
             A Context object with the query returns and the rate limit information.
 
         Raises
@@ -265,8 +263,259 @@ class AniApi(ApiConnection):
         data['data'] = [SongObj(**song) for song in data['data']]
         return Ctx(**data)
 
+    # Resource requests
+    def get_resources(self, version: float, _type: int) -> Ctx:
+        """ Get the resources of the AniApi
+
+        Parameters
+        ----------
+        version : :class:`float`
+            The version from the resource.
+
+        _type : :class:`int`
+            The type of resource you want to get.
+            0 = Anime Genres,
+            1 = Locales
+
+        Returns
+        -------
+        :class:`Ctx`
+            A context object with the query returns and the rate limit information.
+        """
+
+        res, header = self.get(f'/{API_VERSION}/resources/{version}/{_type}', headers=self.headers)
+        data = create_data_dict(res, header)
+        return Ctx(**data)
+
+    # User Story's
+    def get_user_story(self, story_id: int = '', **kwargs) -> Ctx:
+        """ Get a list or specific UserStory from the API
+
+        Parameters
+        ----------
+        story_id : [:class:`int`]
+            The UserStory id to get, note: when you provide an id.
+
+        kwargs
+            Include filter for the List request
+
+        Returns
+        -------
+        :class:`Ctx`
+            Ctx object with the response from the get request
+
+        """
+
+        invalid = set(kwargs) - set(USER_STORY_REQ)
+
+        if invalid:
+            raise InvalidParamsException(f'Invalid arguments: {invalid}')
+
+        res, header = self.get(f'/{API_VERSION}/user_story/{story_id}?{urlencode(kwargs)}', self.headers)
+        data = create_data_dict(res, header)
+        return Ctx(**data)
+
+    def create_user_story(self, user_id: int, anime_id: int, status: int, **kwargs) -> Ctx:
+        """ This will create a UserStory based on the given parameters.
+
+        Parameters
+        ----------
+        user_id : :class:`int`
+            The User ID for the UserStory's bind.
+
+        anime_id : :class:`int`
+            The UserStory's Anime ID.
+
+        status : :class:`int`
+            The UserStory's watching status.
+
+        kwargs : Optional
+            These are the optional parameters.
+
+            current_episode (int) -> The current watching progress. It must be less than
+            the Anime's episode_count value, when you provide a status equal to 1 or 2 this field is auto-calculated.
+
+            current_episode_ticks (int) -> The current episode watching time in milliseconds.
+
+        Returns
+        -------
+        :class:`Ctx`
+            The response as Ctx object
+        """
+
+        invalid = set(kwargs) - {'current_episode',
+                                 'current_episode_ticks'}
+
+        if invalid:
+            raise InvalidParamsException(f'Invalid parameters given: {invalid}')
+
+        udata = {'user_id': user_id, 'anime_id': anime_id, 'status': status}
+        udata.update(kwargs)
+
+        res, header = self.post(url=f'/{API_VERSION}/user_story/', headers=self.headers, data=udata)
+        data = create_data_dict(res, header)
+
+        return Ctx(**data)
+
+    def update_user_story(self, story_id: int, user_id: int, anime_id: int, status: int, ce: int, cet: int) -> Ctx:
+        """
+        Update a UserStory
+
+        Parameters
+        ----------
+        story_id : [:class:`int`]
+            -> id, on the docs.
+            The UserStory's unique identifier.
+
+        user_id : [:class:`int`]
+            -> user_id, on the docs.
+            The userid that is related to the UserStory.
+
+        anime_id : [:class:`int`]
+            -> anime_id, on the docs
+            The UserStory's anime id.
+
+        status : [:class:`int`]
+            -> status, on the docs
+            The watching status of the UserStory.
+
+        ce : [:class:`int`]
+            -> current_episode, on the docs
+            The current watching progress on the UserStory, note: the watching progress must be less or equal to the
+            anime's `episode_count`.
+
+        cet : [:class:`int`]
+            -> current_episode_ticks, on the docs
+            The UserStory's `current_episode` watching time in milliseconds.
+
+        Returns
+        -------
+        :class:`Ctx`
+            A response from the API to prove if it works or not.
+        """
+
+        udata = {'id': story_id, 'user_id': user_id, 'anime_id': anime_id,
+                 'status': status, 'current_episode': ce, 'current_episode_ticks': cet}
+
+        res, header = self.post(url=f'/{API_VERSION}/user_story', headers=self.headers, data=udata)
+        data = create_data_dict(res, header)
+
+        return Ctx(**data)
+
+    def delete_user_story(self, _id: int) -> Ctx:
+        """
+        Deletes a UserStory on the provided unique identifier.
+
+        Parameters
+        ----------
+        _id : [:class:`int`]
+            The id from the UserStory that wanted to be deleted.
+
+        Returns
+        -------
+        :class:`Ctx`
+            Context obj with the response inside it
+
+        Notes
+        -----
+        You should only use the endpoint when the User has 0 linked trackers, otherwise it will get re-imported.
+
+        """
+
+        res, header = self.delete(url=f'/{API_VERSION}/user_story/{_id}', headers=self.headers)
+        data = create_data_dict(res, header)
+
+        return Ctx(**data)
+
+    # User related stuff
+    def get_user(self, user_id: int = '', **kwargs) -> Ctx:
+        """
+        Get user list of users or when you provide a user_id to get a specific user
+
+        Parameters
+        ----------
+        user_id : [:class:`int`]
+            A UserID for specified search of user.
+
+        kwargs
+            Bring up pagination or currently two arguments for filtering:
+
+            username: is not case-sensitive, it searches for substrings in the username.
+            email: it's the same as username.
+
+        Returns
+        -------
+        :class:`ctx`
+            Context object with the query results
+        """
+
+        invalid = set(kwargs) - set(USER_REQ)
+
+        if invalid:
+            raise InvalidParamsException(f'Invalid parameters: {invalid}')
+
+        data = self.get_requests(user_id, 'user', kwargs, UserSObj)
+        return Ctx(**data)
+
+    def update_user(self, user_id: int, gender: int, **kwargs) -> Ctx:
+        """ This method will update user information, please read the notes.
+
+        Parameters
+        ----------
+        user_id : [:class:`int`]
+            The unique identifier for the user that you want to edit.
+
+        gender : [:class:`int`]
+            The gender of the user that will be changed or not.
+
+        kwargs
+            Other settings to change on the user's acc, lists can be found at `utils.flags.UPDATE_USER_REQ` or
+            at the docs at: https://aniapi.com/docs/resources/user#parameters-2
+
+        Returns
+        -------
+        :class:`Ctx`
+            A Ctx object with the return object
+
+        Notes
+        -----
+        **It is NOT Recommended that you implement such function or form, when you want to do so, please redirect the
+        User to the website. More information about it on the docs:
+        https://aniapi.com/docs/resource/user#update-an-user**
+        """
+
+        invalid = set(kwargs) - set(UPDATE_USER_REQ)
+
+        if invalid:
+            raise InvalidParamsException(f'Invalid parameters: {invalid}')
+
+        res, header = self.post(f'/{API_VERSION}/user', headers=self.headers, data={'id': user_id,
+                                                                                    'gender': gender,
+                                                                                    **kwargs})
+        data = create_data_dict(res, header)
+
+        return Ctx(**data)
+
+    def delete_user(self, _id: int) -> Ctx:
+        """
+        This method will delete the user with the given id.
+        Parameters
+        ----------
+        _id : [:class:`int`]
+            The unique identifier for the user that you want to delete.
+
+        Returns
+        -------
+        :class:`Ctx`
+            A Ctx object with the return object
+        """
+
+        res, header = self.delete(f'/{API_VERSION}/user/{_id}', headers=self.headers)
+        data = create_data_dict(res, header)
+        return Ctx(**data)
+
     # Auth me.
-    def auth_me(self, jwt) -> Ctx:
+    def auth_me(self, jwt: str) -> Ctx:
         """
         This method will test the given token and return the user
         information (if it exists and its valid).
@@ -283,38 +532,11 @@ class AniApi(ApiConnection):
             will get a status code of 401.
         """
 
-        res, header = self.get(f'/{API_VERSION}/auth/me', headers=DEFAULT_HEADER(jwt))
+        res, header = self.get(f'/{API_VERSION}/auth/me', headers=default_header(jwt))
         data = create_data_dict(res, header)
 
         if data.get('status_code', 404) != 200:
             return Ctx(**data)
 
-        data['data'] = AuthMeObj(**data.get('data'))
+        data['data'] = UserBObj(**data.get('data'))
         return Ctx(**data)
-
-
-if __name__ == '__main__':
-    from config import API_TOKEN
-
-    test = False
-    start = time.time()
-
-    client = AniApi(token=API_TOKEN)
-
-    if not test:
-        _data: Ctx = client.auth_me('')
-        print(_data)
-    else:
-        f = 20
-        time_list = ()
-
-        for f in range(f):  # FOR PERFORMANCE TESTING
-            start_time = time.time()
-            _data = client.get_song()
-            time_list += (time.time() - start_time,)
-
-        print(f'{sum(time_list) / f:.3f}s')
-
-    end = time.time()
-
-    print(f'Time: {(end - start):.3f}s')
