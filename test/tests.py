@@ -1,10 +1,9 @@
 import time
 
 from constants import API_VERSION
-from objects import UserBObj
+from objects import UserBObj, AnimeObj
 from wrapper import AniApi
 from config import API_TOKEN
-
 
 if __name__ == '__main__':
     test = False
@@ -13,9 +12,9 @@ if __name__ == '__main__':
     client = AniApi(token=API_TOKEN)
 
     if not test:
-        _data: UserBObj = client.auth_me(API_TOKEN).data
+        _data: AnimeObj = client.get_anime(1).data
 
-        print(_data.has_mal)
+        print(_data)
     else:
         f = 20
         time_list = ()

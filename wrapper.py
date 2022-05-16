@@ -344,7 +344,7 @@ class AniApi(ApiConnection):
         :class:`Ctx`
             The response as Ctx object
         """
-        
+
         invalid = set(kwargs) - {'current_episode',
                                  'current_episode_ticks'}
 

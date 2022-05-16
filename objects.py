@@ -157,30 +157,8 @@ class AnimeObj:
     # The same as the titles but for descriptions
     descriptions: Dict[str, str]
 
-    # The animes global start date
-    start_date: Optional[str]
-
-    # The known shows global end date
-    end_date: Optional[str]
-
-    # The weekly airing day
-    weekly_airing_day: Optional[str]
-
-    # The season that the shows has been released
-    season_period: Optional[int]
-
-    # The release year
-    season_year: Optional[int]
-
     # The count for the episodes at the show
-    episode_count: int
-
-    # The average episode duration
-    episode_duration: Optional[int]
-
-    # The url to the Trailer
-    # currently: YouTube and Dailymotion
-    trailer_url: Optional[str]
+    episodes_count: int
 
     # The cover image url
     cover_image: str
@@ -188,23 +166,11 @@ class AnimeObj:
     # Has the show a cover image?
     has_cover_image: bool
 
-    # Cover color, represented as `HEX`
-    cover_color: Optional[str]
-
-    # The shows banner image
-    banner_image: Optional[str]
-
     # The genres that the show is associated with
     genres: List[str]
 
     # A collection of all associated sagas to the show
     sagas: list
-
-    # The show's precedent Animes id in story-line
-    sequel: Optional[int]
-
-    # The shows successive Animes id in story-lin
-    prequel: Optional[int]
 
     # The score that the anime has, from 0 up to 100
     score: float
@@ -212,12 +178,46 @@ class AnimeObj:
     # Is it NSFW?
     nsfw: bool
 
-    # The shows recommended animes ids because similar. Ordered by descendent rating
-    recommendations: Optional[List[int]]
+    # The shows recommended anime's ids because similar. Ordered by descendent rating
+    recommendations: Optional[List[int]] = None
+
+    # The url to the Trailer
+    # currently: YouTube and Dailymotion
+    trailer_url: Optional[str] = None
+
+    # The show's precedent Anime's id in story-line
+    sequel: Optional[int] = None
+
+    # The shows successive Anime's id in story-lin
+    prequel: Optional[int] = None
+
+    # Cover color, represented as `HEX`
+    cover_color: Optional[str] = None
+
+    # The shows banner image
+    banner_image: Optional[str] = None
+
+    # The average episode duration
+    episode_duration: Optional[int] = None
+
+    # The anime's global start date
+    start_date: Optional[str] = None
+
+    # The known shows global end date
+    end_date: Optional[str] = None
+
+    # The weekly airing day
+    weekly_airing_day: Optional[str] = None
+
+    # The season that the shows has been released
+    season_period: Optional[int] = None
+    
+    # The release year
+    season_year: Optional[int] = None
 
     def __repr__(self) -> str:
         return f'<id={self.id} title={list(self.titles.values())[0]!r} ' \
-               f'descriptions={[i for i in self.descriptions.keys()]} nsfw={self.nsfw}>'
+               f'descriptions={[i for i in self.descriptions]} nsfw={self.nsfw}>'
 
 
 @dataclass(frozen=True)
