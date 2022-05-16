@@ -21,8 +21,6 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-import time
-from http.client import HTTPMessage
 from urllib.parse import urlencode
 
 from connection import ApiConnection

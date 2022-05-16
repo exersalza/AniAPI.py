@@ -51,9 +51,7 @@ class ApiConnection(HTTPSConnection):
         -----
         The JWT token will be only used for non-read-only requests.
         """
-
-        # self.connect()  # Connect and disconnect to prevent the connection from being kept open.
-
+        
         res, header = self.__request('GET', headers, url)
 
         self.close()
@@ -61,6 +59,7 @@ class ApiConnection(HTTPSConnection):
 
     def __request(self, method: str, headers: dict, url: str) -> Tuple[bytes, HTTPMessage]:
         """ This is just for preventing repetitive code samples
+
         Parameters
         ----------
         method : [:class:`str`]
@@ -74,8 +73,10 @@ class ApiConnection(HTTPSConnection):
 
         Returns
         -------
-
+        :class:`bytes` and :class:`HTTPMessage`
+            Returns the data
         """
+
         self.request(method, url, headers=headers)
 
         data = self.getresponse()

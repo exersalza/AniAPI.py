@@ -1,9 +1,8 @@
 import time
 
-from constants import API_VERSION
-from objects import UserBObj, AnimeObj
-from wrapper import AniApi
 from config import API_TOKEN
+from objects import AnimeObj
+from wrapper import AniApi
 
 if __name__ == '__main__':
     test = False

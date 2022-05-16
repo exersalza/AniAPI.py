@@ -62,4 +62,3 @@ def create_data_dict(res: bytes, header: dict) -> dict:
     data: dict = json.loads(res.decode('utf-8'))
     data['ratelimit'] = get_ratelimit(header)
     return data
-
