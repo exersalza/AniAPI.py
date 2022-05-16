@@ -142,9 +142,6 @@ class AnimeObj:
     # The anime id on myanimelist.net
     mal_id: int
 
-    # The anime id on themoviedb.org
-    tmdb_id: int
-
     # The shows format destination
     format: int
 
@@ -169,9 +166,6 @@ class AnimeObj:
     # The genres that the show is associated with
     genres: List[str]
 
-    # A collection of all associated sagas to the show
-    sagas: list
-
     # The score that the anime has, from 0 up to 100
     score: float
 
@@ -181,12 +175,18 @@ class AnimeObj:
     # The shows recommended anime's ids because similar. Ordered by descendent rating
     recommendations: Optional[List[int]] = None
 
+    # A collection of all associated sagas to the show
+    sagas: list = None
+
     # The url to the Trailer
     # currently: YouTube and Dailymotion
     trailer_url: Optional[str] = None
 
     # The show's precedent Anime's id in story-line
     sequel: Optional[int] = None
+
+    # The anime id on themoviedb.org
+    tmdb_id: int = None
 
     # The shows successive Anime's id in story-lin
     prequel: Optional[int] = None
