@@ -21,11 +21,12 @@
 #   SOFTWARE.
 
 import json
+from http.client import HTTPMessage
 
 from objects import RateLimit
 
 
-def get_ratelimit(res: dict) -> RateLimit:
+def get_ratelimit(res: HTTPMessage) -> RateLimit:
     """
     Extract the rate limit from the response.
 
@@ -43,7 +44,7 @@ def get_ratelimit(res: dict) -> RateLimit:
                      reset=res.get('X-RateLimit-Reset'))
 
 
-def create_data_dict(res: bytes, header: dict) -> dict:
+def create_data_dict(res: bytes, header: HTTPMessage) -> dict:
     """
     Creates a data dictionary from the response.
     Parameters

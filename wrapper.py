@@ -90,6 +90,9 @@ class AniApi(ApiConnection):
             return data
 
         if data.get('data', False):
+            if isinstance(data['data'], str):
+                return data
+
             data['data']['documents'] = [obj(**i) for i in data['data']['documents']]
             data['data'] = DataObj(**data['data'])
 
@@ -169,6 +172,9 @@ class AniApi(ApiConnection):
 
         res, header = self.get(f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
         data = create_data_dict(res, header)
+
+        if isinstance(data['data'], str):
+            return Ctx(**data)
 
         data['data'] = [AnimeObj(**anime) for anime in data['data']]
         return Ctx(**data)
@@ -261,6 +267,9 @@ class AniApi(ApiConnection):
 
         res, header = self.get(f'/{API_VERSION}/random/song/{count}', headers=self.headers)
         data = create_data_dict(res, header)
+
+        if isinstance(data['data'], str):
+            return Ctx(**data)
 
         data['data'] = [SongObj(**song) for song in data['data']]
         return Ctx(**data)
