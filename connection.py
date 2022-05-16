@@ -40,8 +40,8 @@ class ApiConnection(HTTPSConnection):
             The url to send the request to.
 
         headers : :class:`dict`
-            The headers to send with the request. This is for the jwt token and to
-            tell the API what we want back from them.
+            The headers to send with the request. This is for the jwt token
+            and to tell the API what we want back from them.
 
         Returns
         -------
@@ -126,10 +126,12 @@ class ApiConnection(HTTPSConnection):
             The url to send the request to.
 
         headers : :class:`dict`
-            The headers to send with the request. This is for the jwt token and accept thingies.
+            The headers to send with the request. This is for the jwt token
+            and accept thingies.
 
         data : :class:`dict`
-            The body of the request. This is the data that will be sent to the server.
+            The body of the request. This is the data that will be sent to
+            the server.
 
         Returns
         -------
@@ -152,7 +154,8 @@ class ApiConnection(HTTPSConnection):
             The url to send the request to.
 
         headers : :class:`dict`
-            The headers to send with the request. This is for the jwt token and accept thingies.
+            The headers to send with the request. This is for the jwt token
+            and accept thingies.
 
         Returns
         -------

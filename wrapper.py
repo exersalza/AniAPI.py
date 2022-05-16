@@ -41,15 +41,16 @@ class AniApi(ApiConnection):
         This class will only contain the resources given at the docs,
         oauth will be extended by the other classes.
 
-        In this class you will find other than the standard requests the `auth me` requests,
-        when you want them oAuth stuff please use the :class:`AniApiOAuth` class,
-        it's a subclass of this class.
+        In this class you will find other than the standard requests the
+        `auth me` requests, when you want them oAuth stuff please use the
+        :class:`AniApiOAuth` class, it's a subclass of this class.
 
         Attributes:
         -----------
         token : [:class:`str`]
             The API Token you get from https://aniapi.com/profile.
-            If your application is inside the read-only scope then you don't need to provide a token.
+            If your application is inside the read-only scope then you
+            don't need to provide a token.
 
         timeout : [:class:`int`]
             The timeout for the connection.
@@ -61,8 +62,8 @@ class AniApi(ApiConnection):
         self.headers = default_header(token)
 
     def get_requests(self, _id, url, params, obj) -> dict:
-        """ For development method. this method will be used later to make it easier
-        to implement new endpoints.
+        """ For development method. this method will be used later to
+        make it easier to implement new endpoints.
 
         Parameters
         ----------
@@ -97,7 +98,8 @@ class AniApi(ApiConnection):
     # Here comes all the Anime related methods.
     def get_anime(self, anime_id: int = '', **kwargs) -> Ctx:
         """ Get an Anime object list from the API.
-        You can provide an ID or query parameters to get a single AnimeObject (:class:`Anime`) or an :class:`list`
+        You can provide an ID or query parameters to get a
+        single AnimeObject (:class:`Anime`) or an :class:`list`
         of objects.
 
         Parameters:
@@ -469,8 +471,9 @@ class AniApi(ApiConnection):
             The gender of the user that will be changed or not.
 
         kwargs
-            Other settings to change on the user's acc, lists can be found at `utils.flags.UPDATE_USER_REQ` or
-            at the docs at: https://aniapi.com/docs/resources/user#parameters-2
+            Other settings to change on the user's acc, lists can be found at
+            `utils.flags.UPDATE_USER_REQ` or at the docs at:
+            https://aniapi.com/docs/resources/user#parameters-2
 
         Returns
         -------
@@ -479,7 +482,8 @@ class AniApi(ApiConnection):
 
         Notes
         -----
-        **It is NOT Recommended that you implement such function or form, when you want to do so, please redirect the
+        **It is NOT Recommended that you implement such function or form,
+        when you want to do so, please redirect the
         User to the website. More information about it on the docs:
         https://aniapi.com/docs/resource/user#update-an-user**
         """
