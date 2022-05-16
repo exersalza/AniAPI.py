@@ -217,7 +217,7 @@ class AnimeObj:
 
     def __repr__(self) -> str:
         return f'<id={self.id} title={list(self.titles.values())[0]!r} ' \
-               f'descriptions={[i for i in self.descriptions]} nsfw={self.nsfw}>'
+               f'descriptions={list(self.descriptions)} nsfw={self.nsfw}>'
 
 
 @dataclass(frozen=True)
