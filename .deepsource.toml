@@ -1,9 +1,9 @@
 version = 1
-max_line_length = 120
 
 [[analyzers]]
-name = "python"
-enabled = true
+  max_line_length = 120
+  name = "python"
+  enabled = true
 
 [analyzers.meta]
-runtime_version = "3.x.x"
+  runtime_version = "3.x.x"
