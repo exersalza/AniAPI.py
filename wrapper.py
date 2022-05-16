@@ -34,6 +34,8 @@ from utils import (InvalidParamsException,
                    SONG_REQ,
                    InvalidParamsValueException, UPDATE_USER_REQ, USER_REQ, USER_STORY_REQ)
 
+# Todo:
+# - remove isinstance checks and replace it with status code checks thx
 
 class AniApi(ApiConnection):
     def __init__(self, token: str = ''):
