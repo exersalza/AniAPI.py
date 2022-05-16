@@ -51,7 +51,7 @@ class ApiConnection(HTTPSConnection):
         -----
         The JWT token will be only used for non-read-only requests.
         """
-        
+
         res, header = self.__request('GET', headers, url)
 
         self.close()
