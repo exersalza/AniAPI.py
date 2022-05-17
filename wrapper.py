@@ -1,4 +1,3 @@
-#!/bin/python3
 #  MIT License
 #
 #  Copyright (c) 2022 by exersalza
@@ -34,8 +33,10 @@ from utils import (InvalidParamsException,
                    SONG_REQ,
                    InvalidParamsValueException, UPDATE_USER_REQ, USER_REQ, USER_STORY_REQ)
 
+
 # Todo:
 # - remove isinstance checks and replace it with status code checks thx
+
 
 class AniApi(ApiConnection):
     def __init__(self, token: str = ''):
@@ -87,14 +88,14 @@ class AniApi(ApiConnection):
         res, headers = self.get(f'/{API_VERSION}/{url}/{_id}?{urlencode(params)}', headers=self.headers)
         data = create_data_dict(res, headers)
 
+        if data.get('status_code', 404) != 200:
+            return data
+        
         if _id:
             data['data'] = obj(**data.get('data'))
             return data
 
         if data.get('data', False):
-            if isinstance(data['data'], str):
-                return data
-
             data['data']['documents'] = [obj(**i) for i in data['data']['documents']]
             data['data'] = DataObj(**data['data'])
 
@@ -175,7 +176,7 @@ class AniApi(ApiConnection):
         res, header = self.get(f'/{API_VERSION}/random/anime/{count}/{nsfw}', headers=self.headers)
         data = create_data_dict(res, header)
 
-        if isinstance(data['data'], str):
+        if data.get('status_code', 404) != 200:
             return Ctx(**data)
 
         data['data'] = [AnimeObj(**anime) for anime in data['data']]
@@ -264,13 +265,15 @@ class AniApi(ApiConnection):
             Context object with the query returns and the rate limit information.
         """
 
+        # This is just for that the user don't bring a number that is bigger/lower than
+        # the api can handle it
         if count > 50 or count < 1:
-            raise ValueError('Count must be less than 50 and more or equal to 1')
+            raise ValueError('Count must be less than 50 and greater or equal to 1')
 
         res, header = self.get(f'/{API_VERSION}/random/song/{count}', headers=self.headers)
         data = create_data_dict(res, header)
 
-        if isinstance(data['data'], str):
+        if data.get('status_code', 404) != 200:
             return Ctx(**data)
 
         data['data'] = [SongObj(**song) for song in data['data']]
@@ -550,6 +553,8 @@ class AniApi(ApiConnection):
         res, header = self.get(f'/{API_VERSION}/auth/me', headers=default_header(jwt))
         data = create_data_dict(res, header)
 
+        # Just checking for the status code, so it will hopefully not crash the
+        # program when it throws something other than 200 :)
         if data.get('status_code', 404) != 200:
             return Ctx(**data)
 

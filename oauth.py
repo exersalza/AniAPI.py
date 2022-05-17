@@ -23,5 +23,23 @@
 from wrapper import AniApi
 
 
+# Idea's:
+# Make a function to setup a webserver for token grabbing.
+#
+
+
 class AniApiOAuth(AniApi):
-    pass
+    def __init__(self, **kwargs):
+        """ This is the oAuth subclass from the AniApi, it has all functions
+        plus the oAuth functions.
+
+        Parameters
+        ----------
+        kwargs
+            Token: set your JWT token
+        """
+
+        super(AniApiOAuth, self).__init__(**kwargs)
+
+    def f(self):
+        ...

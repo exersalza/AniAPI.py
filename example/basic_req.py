@@ -10,10 +10,10 @@ if __name__ == '__main__':
 
     # Here we want to get the list of all the anime. We also don't want all other information like the response
     # code, the headers, the status code, etc.
-    animes: DataObj = client.get_anime(nsfw=True, page=3).data
+    animes: DataObj = client.get_anime(year=2000, page=50).data
 
     # Print all animes  that are nsfw and on page 3
 
-    for anime in animes.documents:
-        if anime.nsfw:
-            print(anime)
+    # for anime in animes.documents:
+    #     if anime.nsfw:
+    #         print(anime)
